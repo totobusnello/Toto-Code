@@ -47,26 +47,40 @@ jobs:
 
       - name: Parse agent command
         id: parse
+        env:
+          COMMENT: ${{ github.event.comment.body }}
         run: |
-          COMMENT="${{ github.event.comment.body }}"
+          # Sanitize input - only allow alphanumeric, spaces, hyphens, underscores
+          SANITIZED=$(echo "$COMMENT" | tr -cd '[:alnum:][:space:]-_./,')
+
           # Extract agent name: /agent <agent-name> [prompt]
-          AGENT=$(echo "$COMMENT" | sed -n 's|^/agent \([^ ]*\).*|\1|p')
-          PROMPT=$(echo "$COMMENT" | sed 's|^/agent [^ ]* *||')
+          AGENT=$(echo "$SANITIZED" | sed -n 's|^/agent \([^ ]*\).*|\1|p')
+          PROMPT=$(echo "$SANITIZED" | sed 's|^/agent [^ ]* *||')
+
+          # Validate agent name (alphanumeric and hyphens only)
+          if ! echo "$AGENT" | grep -qE '^[a-zA-Z0-9-]+$'; then
+            echo "Invalid agent name"
+            exit 1
+          fi
 
           if [ -z "$PROMPT" ]; then
             PROMPT="Execute your default task on this codebase"
           fi
 
           echo "agent=$AGENT" >> $GITHUB_OUTPUT
-          echo "prompt=$PROMPT" >> $GITHUB_OUTPUT
+          # Use base64 to safely pass prompt
+          echo "prompt=$(echo "$PROMPT" | base64 -w 0)" >> $GITHUB_OUTPUT
 
       - name: Run Claude Code Agent
         id: claude
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          AGENT: ${{ steps.parse.outputs.agent }}
+          PROMPT_B64: ${{ steps.parse.outputs.prompt }}
         run: |
-          AGENT="${{ steps.parse.outputs.agent }}"
-          PROMPT="${{ steps.parse.outputs.prompt }}"
+          set +x  # Disable command echoing to protect secrets
+
+          PROMPT=$(echo "$PROMPT_B64" | base64 -d)
 
           # Map common agent names to full prompts
           case "$AGENT" in
@@ -93,13 +107,11 @@ jobs:
               ;;
           esac
 
-          # Run Claude Code and capture output
-          OUTPUT=$(claude --print "$FULL_PROMPT" 2>&1) || true
+          # Run Claude Code and capture output with proper error handling
+          if ! claude --print "$FULL_PROMPT" > /tmp/claude_output.txt 2>&1; then
+            echo "Claude command failed with exit code $?" >> /tmp/claude_output.txt
+          fi
 
-          # Save output to file (handle multiline)
-          echo "$OUTPUT" > /tmp/claude_output.txt
-
-          # Set output for next step
           echo "output_file=/tmp/claude_output.txt" >> $GITHUB_OUTPUT
 
       - name: Post result to issue/PR
@@ -108,9 +120,15 @@ jobs:
           script: |
             const fs = require('fs');
             const output = fs.readFileSync('/tmp/claude_output.txt', 'utf8');
-            const agent = '${{ steps.parse.outputs.agent }}';
+            const agent = process.env.AGENT;
 
-            const body = `## 🤖 Agent: \`${agent}\`\n\n${output}\n\n---\n*Powered by Claude Code*`;
+            // Truncate if too long
+            const maxLen = 60000;
+            const truncated = output.length > maxLen
+              ? output.substring(0, maxLen) + '\n\n... (truncated)'
+              : output;
+
+            const body = `## 🤖 Agent: \`${agent}\`\n\n${truncated}\n\n---\n*Powered by Claude Code*`;
 
             await github.rest.issues.createComment({
               owner: context.repo.owner,
@@ -118,6 +136,8 @@ jobs:
               issue_number: context.issue.number,
               body: body
             });
+        env:
+          AGENT: ${{ steps.parse.outputs.agent }}
 
   # Job 2: Auto code review on PRs
   auto-review:
@@ -139,8 +159,10 @@ jobs:
 
       - name: Get PR diff
         id: diff
+        env:
+          BASE_REF: ${{ github.base_ref }}
         run: |
-          git diff origin/${{ github.base_ref }}...HEAD > /tmp/pr_diff.txt
+          git diff "origin/$BASE_REF"...HEAD > /tmp/pr_diff.txt
           echo "diff_file=/tmp/pr_diff.txt" >> $GITHUB_OUTPUT
 
       - name: Run Claude Code Review
@@ -148,16 +170,21 @@ jobs:
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: |
-          DIFF=$(cat /tmp/pr_diff.txt)
+          set +x  # Disable command echoing to protect secrets
 
-          claude --print "Act as a code-reviewer agent. Review this PR diff and provide:
+          # Read diff from file instead of variable expansion
+          PROMPT="Act as a code-reviewer agent. Review this PR diff and provide:
           1. Summary of changes
           2. Potential issues or bugs
           3. Security concerns
           4. Suggestions for improvement
 
           PR Diff:
-          $DIFF" > /tmp/review_output.txt 2>&1 || true
+          $(cat /tmp/pr_diff.txt | head -500)"
+
+          if ! claude --print "$PROMPT" > /tmp/review_output.txt 2>&1; then
+            echo "Review failed with exit code $?" >> /tmp/review_output.txt
+          fi
 
       - name: Post review comment
         uses: actions/github-script@v7
@@ -166,7 +193,12 @@ jobs:
             const fs = require('fs');
             const output = fs.readFileSync('/tmp/review_output.txt', 'utf8');
 
-            const body = `## 🔍 Claude Code Review\n\n${output}\n\n---\n*Automated review by Claude Code*`;
+            const maxLen = 60000;
+            const truncated = output.length > maxLen
+              ? output.substring(0, maxLen) + '\n\n... (truncated)'
+              : output;
+
+            const body = `## 🔍 Claude Code Review\n\n${truncated}\n\n---\n*Automated review by Claude Code*`;
 
             await github.rest.issues.createComment({
               owner: context.repo.owner,
@@ -196,12 +228,15 @@ jobs:
       - name: Run Claude Code Agent
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          AGENT: ${{ github.event.inputs.agent }}
+          PROMPT: ${{ github.event.inputs.prompt }}
         run: |
-          AGENT="${{ github.event.inputs.agent }}"
-          PROMPT="${{ github.event.inputs.prompt }}"
+          set +x  # Disable command echoing to protect secrets
 
           echo "## Running Agent: $AGENT"
-          echo "## Prompt: $PROMPT"
           echo "---"
 
-          claude --print "Act as a $AGENT agent. $PROMPT"
+          if ! claude --print "Act as a $AGENT agent. $PROMPT"; then
+            echo "Agent execution failed"
+            exit 1
+          fi

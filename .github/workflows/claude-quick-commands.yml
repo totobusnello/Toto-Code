@@ -22,11 +22,24 @@ jobs:
        startsWith(github.event.comment.body, '/explain'))
     runs-on: ubuntu-latest
     steps:
+      - name: Get PR info
+        id: pr
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pr = await github.rest.pulls.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.issue.number
+            });
+            core.setOutput('head_sha', pr.data.head.sha);
+            core.setOutput('base_ref', pr.data.base.ref);
+
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          ref: ${{ github.event.pull_request.head.sha }}
+          ref: ${{ steps.pr.outputs.head_sha }}
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -51,61 +64,57 @@ jobs:
         id: run
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          COMMENT: ${{ github.event.comment.body }}
+          BASE_REF: ${{ steps.pr.outputs.base_ref }}
         run: |
-          COMMENT="${{ github.event.comment.body }}"
-          COMMAND=$(echo "$COMMENT" | awk '{print $1}')
-          EXTRA=$(echo "$COMMENT" | sed 's|^/[^ ]* *||')
+          set +x  # Disable command echoing to protect secrets
+
+          # Sanitize input
+          SANITIZED=$(echo "$COMMENT" | tr -cd '[:alnum:][:space:]-_./,')
+          COMMAND=$(echo "$SANITIZED" | awk '{print $1}')
+          EXTRA=$(echo "$SANITIZED" | sed 's|^/[^ ]* *||')
 
           case "$COMMAND" in
             "/review")
               PROMPT="Act as code-reviewer-pro agent from my team. Do a thorough code review of the changes in this PR. Focus on: code quality, bugs, security, performance, and maintainability. $EXTRA"
-              EMOJI="magnifying_glass_tilted_left"
               TITLE="Code Review"
               ;;
             "/security")
               PROMPT="Act as security-auditor agent. Perform a security audit: check OWASP Top 10, secrets, SQL injection, XSS, CSRF, auth issues. $EXTRA"
-              EMOJI="shield"
               TITLE="Security Audit"
               ;;
             "/test")
               PROMPT="Act as test-automator agent. Analyze this code and suggest comprehensive tests: unit tests, integration tests, edge cases. Provide example test code. $EXTRA"
-              EMOJI="test_tube"
               TITLE="Test Suggestions"
               ;;
             "/docs")
               PROMPT="Act as documentation-engineer agent. Review and suggest documentation improvements. Generate docstrings, README updates, and API docs as needed. $EXTRA"
-              EMOJI="books"
               TITLE="Documentation"
               ;;
             "/refactor")
               PROMPT="Act as refactoring-specialist agent. Analyze code for refactoring opportunities: reduce complexity, improve readability, apply design patterns. $EXTRA"
-              EMOJI="recycle"
               TITLE="Refactoring Suggestions"
               ;;
             "/debug")
               PROMPT="Act as debugger agent. Analyze this code for: potential bugs, edge cases, error handling, race conditions, memory leaks. $EXTRA"
-              EMOJI="beetle"
               TITLE="Debug Analysis"
               ;;
             "/explain")
               PROMPT="Explain this codebase/changes in detail. What does it do? How does it work? What are the key components? $EXTRA"
-              EMOJI="teacher"
               TITLE="Code Explanation"
               ;;
             *)
-              PROMPT="$COMMENT"
-              EMOJI="robot"
+              PROMPT="$SANITIZED"
               TITLE="Claude Response"
               ;;
           esac
 
           echo "title=$TITLE" >> $GITHUB_OUTPUT
-          echo "emoji=$EMOJI" >> $GITHUB_OUTPUT
 
           # Get the PR diff for context
-          git diff origin/${{ github.base_ref }}...HEAD > /tmp/diff.txt 2>/dev/null || true
+          git diff "origin/$BASE_REF"...HEAD > /tmp/diff.txt 2>/dev/null || true
 
-          # Run Claude with the diff context
+          # Build prompt with diff context
           {
             echo "Context: This is a PR review. Here's the diff:"
             echo '```diff'
@@ -113,15 +122,22 @@ jobs:
             echo '```'
             echo ""
             echo "$PROMPT"
-          } | claude --print - > /tmp/output.txt 2>&1 || true
+          } > /tmp/full_prompt.txt
+
+          # Run Claude with proper error handling
+          if ! claude --print "$(cat /tmp/full_prompt.txt)" > /tmp/output.txt 2>&1; then
+            echo "Command failed with exit code $?" >> /tmp/output.txt
+          fi
 
       - name: Post result
         uses: actions/github-script@v7
+        env:
+          TITLE: ${{ steps.run.outputs.title }}
         with:
           script: |
             const fs = require('fs');
             const output = fs.readFileSync('/tmp/output.txt', 'utf8');
-            const title = '${{ steps.run.outputs.title }}';
+            const title = process.env.TITLE;
 
             // Truncate if too long
             const maxLength = 60000;
