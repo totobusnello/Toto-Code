@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Code Skills & Agents Dashboard</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🤖</text></svg>">
+    <style>
+        :root {
+            --bg-primary: #0d1117;
+            --bg-secondary: #161b22;
+            --bg-tertiary: #21262d;
+            --text-primary: #f0f6fc;
+            --text-secondary: #8b949e;
+            --accent: #58a6ff;
+            --accent-hover: #79c0ff;
+            --success: #3fb950;
+            --warning: #d29922;
+            --danger: #f85149;
+            --border: #30363d;
+            --card-shadow: 0 8px 24px rgba(0,0,0,0.4);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        header {
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border);
+            padding: 1.5rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .logo-icon {
+            font-size: 2rem;
+        }
+
+        .logo h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .logo span {
+            color: var(--accent);
+        }
+
+        /* Search */
+        .search-container {
+            flex: 1;
+            max-width: 500px;
+            min-width: 250px;
+        }
+
+        .search-box {
+            position: relative;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 0.75rem 1rem 0.75rem 2.75rem;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 1rem;
+            transition: all 0.2s;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.2);
+        }
+
+        .search-box::before {
+            content: "🔍";
+            position: absolute;
+            left: 0.875rem;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1rem;
+        }
+
+        /* Stats */
+        .stats {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+        }
+
+        /* Main Content */
+        main {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 1rem;
+        }
+
+        .tab {
+            padding: 0.75rem 1.5rem;
+            background: transparent;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-secondary);
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .tab:hover {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+
+        .tab.active {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: var(--bg-primary);
+        }
+
+        /* Categories Filter */
+        .categories {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .category-btn {
+            padding: 0.5rem 1rem;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .category-btn:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .category-btn.active {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: var(--bg-primary);
+        }
+
+        /* Grid */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 1.5rem;
+        }
+
+        /* Card */
+        .card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .card:hover {
+            border-color: var(--accent);
+            transform: translateY(-4px);
+            box-shadow: var(--card-shadow);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .card-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .card-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .card-category {
+            font-size: 0.75rem;
+            padding: 0.25rem 0.75rem;
+            background: var(--bg-tertiary);
+            border-radius: 12px;
+            color: var(--text-secondary);
+        }
+
+        .card-description {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            margin-bottom: 1rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .card-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .tag {
+            font-size: 0.75rem;
+            padding: 0.25rem 0.5rem;
+            background: rgba(88, 166, 255, 0.1);
+            border-radius: 4px;
+            color: var(--accent);
+        }
+
+        /* Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            max-width: 700px;
+            width: 100%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            background: var(--bg-secondary);
+        }
+
+        .modal-title {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .modal-title span {
+            font-size: 1.5rem;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--text-secondary);
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+
+        .modal-close:hover {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+        }
+
+        .modal-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-section h4 {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+        }
+
+        .modal-section p {
+            color: var(--text-primary);
+        }
+
+        .code-block {
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1rem;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 0.875rem;
+            overflow-x: auto;
+            position: relative;
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            padding: 0.5rem 0.75rem;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--text-secondary);
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .copy-btn:hover {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: var(--bg-primary);
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: var(--text-secondary);
+        }
+
+        .empty-state-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            header {
+                padding: 1rem;
+            }
+
+            .header-content {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .search-container {
+                max-width: none;
+            }
+
+            .stats {
+                justify-content: center;
+            }
+
+            main {
+                padding: 1rem;
+            }
+
+            .tabs {
+                overflow-x: auto;
+                flex-wrap: nowrap;
+            }
+
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <div class="logo">
+                <span class="logo-icon">🤖</span>
+                <h1>Claude Code <span>Dashboard</span></h1>
+            </div>
+
+            <div class="search-container">
+                <div class="search-box">
+                    <input type="text" id="searchInput" placeholder="Buscar skills ou agents...">
+                </div>
+            </div>
+
+            <div class="stats">
+                <div class="stat">
+                    <div class="stat-value" id="skillCount">688</div>
+                    <div class="stat-label">Skills</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" id="agentCount">472</div>
+                    <div class="stat-label">Agents</div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="tabs">
+            <button class="tab active" data-tab="skills">📌 Skills</button>
+            <button class="tab" data-tab="agents">🤖 Agents</button>
+            <button class="tab" data-tab="web">🌐 Web Skills</button>
+            <button class="tab" data-tab="workflows">🔄 Workflows</button>
+        </div>
+
+        <div class="categories" id="categories">
+            <button class="category-btn active" data-category="all">Todos</button>
+            <button class="category-btn" data-category="development">Development</button>
+            <button class="category-btn" data-category="marketing">Marketing</button>
+            <button class="category-btn" data-category="data">Data & ML</button>
+            <button class="category-btn" data-category="devops">DevOps</button>
+            <button class="category-btn" data-category="security">Security</button>
+            <button class="category-btn" data-category="testing">Testing</button>
+            <button class="category-btn" data-category="documentation">Documentation</button>
+            <button class="category-btn" data-category="product">Product</button>
+        </div>
+
+        <div class="grid" id="grid"></div>
+    </main>
+
+    <!-- Modal -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="modal-title">
+                    <span id="modalIcon">📌</span>
+                    <h3 id="modalTitle">Skill Name</h3>
+                </div>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body" id="modalBody"></div>
+        </div>
+    </div>
+
+    <script>
+        // Data
+        const skills = [
+            // Marketing & Copywriting
+            { id: 'copywriting', name: 'Copywriting Pro', icon: '✍️', category: 'marketing', description: 'Cria textos persuasivos e copy de alta conversão para landing pages, emails e anúncios.', tags: ['copy', 'persuasão', 'vendas'], usage: 'Escreva uma copy para [produto/serviço]' },
+            { id: 'seo-audit', name: 'SEO Audit', icon: '🔍', category: 'marketing', description: 'Audita páginas para SEO on-page, meta tags, headers e oportunidades de otimização.', tags: ['seo', 'otimização', 'google'], usage: 'Faça um audit SEO desta página: [URL]' },
+            { id: 'pricing-strategy', name: 'Pricing Strategy', icon: '💰', category: 'marketing', description: 'Desenvolve estratégias de precificação baseadas em valor, mercado e psicologia do consumidor.', tags: ['preço', 'estratégia', 'valor'], usage: 'Crie uma estratégia de pricing para [produto]' },
+            { id: 'launch-strategy', name: 'Launch Strategy', icon: '🚀', category: 'marketing', description: 'Planeja lançamentos de produtos com cronograma, canais e táticas de go-to-market.', tags: ['lançamento', 'gtm', 'marketing'], usage: 'Planeje o lançamento de [produto]' },
+            { id: 'email-sequences', name: 'Email Sequences', icon: '📧', category: 'marketing', description: 'Cria sequências de email automatizadas para nutrição, onboarding e vendas.', tags: ['email', 'automação', 'nurturing'], usage: 'Crie uma sequência de emails para [objetivo]' },
+            { id: 'competitor-analysis', name: 'Competitor Analysis', icon: '🎯', category: 'marketing', description: 'Analisa concorrentes identificando forças, fraquezas e oportunidades de diferenciação.', tags: ['competidores', 'análise', 'mercado'], usage: 'Analise os concorrentes de [empresa/produto]' },
+            { id: 'social-content', name: 'Social Content', icon: '📱', category: 'marketing', description: 'Cria conteúdo otimizado para redes sociais com hooks, CTAs e formatos específicos.', tags: ['social', 'conteúdo', 'engajamento'], usage: 'Crie posts sobre [tema] para [rede social]' },
+
+            // CRO & Optimization
+            { id: 'page-cro', name: 'Page CRO', icon: '📈', category: 'marketing', description: 'Otimiza páginas para conversão com análise de UX, copy e elementos de persuasão.', tags: ['cro', 'conversão', 'ux'], usage: 'Otimize esta página para conversão: [URL]' },
+            { id: 'ab-testing', name: 'A/B Testing', icon: '🧪', category: 'marketing', description: 'Planeja e analisa testes A/B com hipóteses, métricas e significância estatística.', tags: ['teste', 'experimento', 'dados'], usage: 'Planeje um teste A/B para [elemento]' },
+            { id: 'form-optimization', name: 'Form Optimization', icon: '📝', category: 'marketing', description: 'Otimiza formulários para aumentar taxa de conclusão e qualidade dos leads.', tags: ['formulário', 'leads', 'conversão'], usage: 'Otimize este formulário de [tipo]' },
+
+            // Development
+            { id: 'python-pro', name: 'Python Pro', icon: '🐍', category: 'development', description: 'Desenvolvimento avançado em Python com best practices, patterns e otimizações.', tags: ['python', 'backend', 'código'], usage: 'Use python-pro para [tarefa]' },
+            { id: 'typescript-pro', name: 'TypeScript Pro', icon: '💎', category: 'development', description: 'TypeScript avançado com tipos complexos, generics e patterns de arquitetura.', tags: ['typescript', 'tipos', 'frontend'], usage: 'Use typescript-pro para [tarefa]' },
+            { id: 'api-designer', name: 'API Designer', icon: '🔌', category: 'development', description: 'Design de APIs RESTful com boas práticas, versionamento e documentação.', tags: ['api', 'rest', 'design'], usage: 'Projete uma API para [recurso]' },
+            { id: 'react-best-practices', name: 'React Best Practices', icon: '⚛️', category: 'development', description: 'Desenvolvimento React com hooks, patterns, performance e acessibilidade.', tags: ['react', 'frontend', 'hooks'], usage: 'Revise este componente React' },
+            { id: 'fastapi-expert', name: 'FastAPI Expert', icon: '⚡', category: 'development', description: 'Desenvolvimento de APIs com FastAPI, Pydantic, async e documentação automática.', tags: ['fastapi', 'python', 'api'], usage: 'Crie um endpoint FastAPI para [recurso]' },
+            { id: 'nextjs-developer', name: 'Next.js Developer', icon: '▲', category: 'development', description: 'Desenvolvimento Next.js com App Router, Server Components e otimizações.', tags: ['nextjs', 'react', 'ssr'], usage: 'Use nextjs-developer para [tarefa]' },
+            { id: 'database-design', name: 'Database Design', icon: '🗄️', category: 'development', description: 'Modelagem de banco de dados com normalização, índices e otimização de queries.', tags: ['database', 'sql', 'modelagem'], usage: 'Projete o schema para [sistema]' },
+
+            // Data & ML
+            { id: 'excel-analysis', name: 'Excel Analysis', icon: '📊', category: 'data', description: 'Análise de dados em Excel com fórmulas avançadas, pivot tables e visualizações.', tags: ['excel', 'dados', 'análise'], usage: 'Analise estes dados do Excel' },
+            { id: 'data-analyst', name: 'Data Analyst', icon: '📉', category: 'data', description: 'Análise de dados com Python, Pandas, visualizações e insights acionáveis.', tags: ['dados', 'pandas', 'análise'], usage: 'Analise este dataset' },
+            { id: 'ml-engineer', name: 'ML Engineer', icon: '🧠', category: 'data', description: 'Machine Learning com scikit-learn, PyTorch, feature engineering e deployment.', tags: ['ml', 'ai', 'modelos'], usage: 'Crie um modelo para [problema]' },
+            { id: 'llm-architect', name: 'LLM Architect', icon: '🤖', category: 'data', description: 'Arquitetura de sistemas com LLMs, RAG, prompting e fine-tuning.', tags: ['llm', 'ai', 'rag'], usage: 'Projete um sistema com LLM para [caso]' },
+
+            // DevOps
+            { id: 'devops-engineer', name: 'DevOps Engineer', icon: '🔧', category: 'devops', description: 'CI/CD, automação, monitoring e práticas de infraestrutura como código.', tags: ['devops', 'ci/cd', 'automação'], usage: 'Configure CI/CD para [projeto]' },
+            { id: 'kubernetes-specialist', name: 'Kubernetes Specialist', icon: '☸️', category: 'devops', description: 'Orquestração de containers com K8s, Helm, service mesh e observabilidade.', tags: ['k8s', 'containers', 'cloud'], usage: 'Configure K8s para [aplicação]' },
+            { id: 'terraform-engineer', name: 'Terraform Engineer', icon: '🏗️', category: 'devops', description: 'Infrastructure as Code com Terraform, modules e state management.', tags: ['terraform', 'iac', 'cloud'], usage: 'Crie infra Terraform para [recurso]' },
+            { id: 'cloud-architect', name: 'Cloud Architect', icon: '☁️', category: 'devops', description: 'Arquitetura cloud com AWS/Azure/GCP, bem arquitetado e otimização de custos.', tags: ['cloud', 'aws', 'arquitetura'], usage: 'Projete arquitetura cloud para [sistema]' },
+
+            // Security
+            { id: 'pentest-checklist', name: 'Pentest Checklist', icon: '🔐', category: 'security', description: 'Checklist completo de testes de penetração seguindo OWASP e metodologias padrão.', tags: ['pentest', 'owasp', 'segurança'], usage: 'Faça um pentest checklist para [aplicação]' },
+            { id: 'security-auditor', name: 'Security Auditor', icon: '🛡️', category: 'security', description: 'Auditoria de segurança de código, configurações e vulnerabilidades.', tags: ['segurança', 'audit', 'vulnerabilidades'], usage: 'Audite a segurança de [código/sistema]' },
+            { id: 'burp-suite', name: 'Burp Suite Testing', icon: '🔓', category: 'security', description: 'Testes de segurança web com Burp Suite, interceptação e análise de tráfego.', tags: ['burp', 'web', 'testes'], usage: 'Use Burp Suite para testar [aplicação]' },
+            { id: 'sqlmap', name: 'SQLMap', icon: '💉', category: 'security', description: 'Testes de SQL injection automatizados com SQLMap e técnicas de bypass.', tags: ['sql', 'injection', 'database'], usage: 'Teste SQL injection em [endpoint]' },
+
+            // Testing
+            { id: 'tdd-guide', name: 'TDD Guide', icon: '✅', category: 'testing', description: 'Test-Driven Development com red-green-refactor, mocks e cobertura.', tags: ['tdd', 'testes', 'qualidade'], usage: 'Aplique TDD para [funcionalidade]' },
+            { id: 'systematic-debugging', name: 'Systematic Debugging', icon: '🐛', category: 'testing', description: 'Debugging sistemático com análise de causa raiz, logs e reprodução.', tags: ['debug', 'bugs', 'análise'], usage: 'Debug este problema: [descrição]' },
+            { id: 'code-review', name: 'Code Review', icon: '👁️', category: 'testing', description: 'Code review completo com foco em qualidade, segurança e manutenibilidade.', tags: ['review', 'qualidade', 'código'], usage: 'Revise este código' },
+            { id: 'qa-expert', name: 'QA Expert', icon: '🧪', category: 'testing', description: 'Quality Assurance com estratégias de teste, casos de teste e automação.', tags: ['qa', 'testes', 'qualidade'], usage: 'Crie casos de teste para [feature]' },
+
+            // Documentation
+            { id: 'technical-writer', name: 'Technical Writer', icon: '📚', category: 'documentation', description: 'Documentação técnica clara, estruturada e orientada ao usuário.', tags: ['docs', 'escrita', 'técnico'], usage: 'Documente [código/api/sistema]' },
+            { id: 'api-documenter', name: 'API Documenter', icon: '📖', category: 'documentation', description: 'Documentação de APIs com OpenAPI/Swagger, exemplos e guias de integração.', tags: ['api', 'swagger', 'openapi'], usage: 'Documente esta API' },
+
+            // Product
+            { id: 'prd', name: 'PRD Writer', icon: '📋', category: 'product', description: 'Cria Product Requirements Documents completos com user stories e critérios de aceite.', tags: ['prd', 'produto', 'requisitos'], usage: 'Crie um PRD para [feature]' },
+            { id: 'product-manager', name: 'Product Manager', icon: '🎯', category: 'product', description: 'Gestão de produto com priorização, roadmap e métricas de sucesso.', tags: ['produto', 'pm', 'estratégia'], usage: 'Ajude a priorizar [features]' },
+            { id: 'workflow-orchestrator', name: 'Workflow Orchestrator', icon: '🔄', category: 'product', description: 'Coordena implementações complexas com múltiplos agents e fases.', tags: ['workflow', 'orquestração', 'planejamento'], usage: 'Orquestre a implementação de [feature]' },
+
+            // Office Documents
+            { id: 'excel-creator', name: 'Excel Creator', icon: '📊', category: 'data', description: 'Cria planilhas Excel com fórmulas, formatação e automação VBA.', tags: ['excel', 'planilha', 'dados'], usage: 'Crie uma planilha para [finalidade]' },
+            { id: 'word-creator', name: 'Word Creator', icon: '📄', category: 'documentation', description: 'Cria documentos Word formatados profissionalmente com estilos e índices.', tags: ['word', 'documento', 'texto'], usage: 'Crie um documento sobre [tema]' },
+            { id: 'powerpoint-creator', name: 'PowerPoint Creator', icon: '📽️', category: 'documentation', description: 'Cria apresentações impactantes com design, storytelling e animações.', tags: ['ppt', 'apresentação', 'slides'], usage: 'Crie uma apresentação sobre [tema]' },
+            { id: 'pdf-processor', name: 'PDF Processor', icon: '📑', category: 'documentation', description: 'Processa, extrai e manipula PDFs com análise de conteúdo.', tags: ['pdf', 'extração', 'documento'], usage: 'Processe este PDF' },
+        ];
+
+        const agents = [
+            // Frontend
+            { id: 'react-specialist', name: 'React Specialist', icon: '⚛️', category: 'development', description: 'Especialista em React com hooks, context, performance e testing.', tags: ['react', 'frontend', 'componentes'] },
+            { id: 'vue-expert', name: 'Vue Expert', icon: '💚', category: 'development', description: 'Especialista em Vue.js com Composition API, Vuex/Pinia e Nuxt.', tags: ['vue', 'frontend', 'nuxt'] },
+            { id: 'angular-architect', name: 'Angular Architect', icon: '🅰️', category: 'development', description: 'Arquiteto Angular com módulos, RxJS, NgRx e enterprise patterns.', tags: ['angular', 'frontend', 'rxjs'] },
+            { id: 'frontend-developer', name: 'Frontend Developer', icon: '🎨', category: 'development', description: 'Desenvolvedor frontend generalista com HTML, CSS, JS e frameworks.', tags: ['frontend', 'css', 'html'] },
+
+            // Backend
+            { id: 'backend-developer', name: 'Backend Developer', icon: '⚙️', category: 'development', description: 'Desenvolvedor backend com APIs, databases e arquitetura de serviços.', tags: ['backend', 'api', 'servidor'] },
+            { id: 'django-developer', name: 'Django Developer', icon: '🎸', category: 'development', description: 'Especialista Django com ORM, REST framework e admin customization.', tags: ['django', 'python', 'orm'] },
+            { id: 'nestjs-expert', name: 'NestJS Expert', icon: '🐈', category: 'development', description: 'Especialista NestJS com decorators, modules e microservices.', tags: ['nestjs', 'typescript', 'node'] },
+            { id: 'rails-expert', name: 'Rails Expert', icon: '💎', category: 'development', description: 'Especialista Ruby on Rails com ActiveRecord, gems e conventions.', tags: ['rails', 'ruby', 'mvc'] },
+
+            // Mobile
+            { id: 'flutter-expert', name: 'Flutter Expert', icon: '📱', category: 'development', description: 'Especialista Flutter com widgets, state management e platform channels.', tags: ['flutter', 'dart', 'mobile'] },
+            { id: 'react-native-dev', name: 'React Native Dev', icon: '📲', category: 'development', description: 'Desenvolvedor React Native com navigation, native modules e expo.', tags: ['react-native', 'mobile', 'javascript'] },
+
+            // Languages
+            { id: 'rust-engineer', name: 'Rust Engineer', icon: '🦀', category: 'development', description: 'Engenheiro Rust com ownership, lifetimes, async e sistemas de baixo nível.', tags: ['rust', 'sistemas', 'performance'] },
+            { id: 'golang-pro', name: 'Golang Pro', icon: '🐹', category: 'development', description: 'Especialista Go com goroutines, channels e sistemas distribuídos.', tags: ['go', 'concorrência', 'backend'] },
+            { id: 'java-architect', name: 'Java Architect', icon: '☕', category: 'development', description: 'Arquiteto Java com Spring, microservices e enterprise patterns.', tags: ['java', 'spring', 'enterprise'] },
+            { id: 'kotlin-specialist', name: 'Kotlin Specialist', icon: '🇰', category: 'development', description: 'Especialista Kotlin com coroutines, Android e multiplataforma.', tags: ['kotlin', 'android', 'jvm'] },
+
+            // Data
+            { id: 'data-scientist', name: 'Data Scientist', icon: '🔬', category: 'data', description: 'Cientista de dados com estatística, ML, visualização e storytelling.', tags: ['dados', 'ml', 'estatística'] },
+            { id: 'data-engineer', name: 'Data Engineer', icon: '🔧', category: 'data', description: 'Engenheiro de dados com ETL, pipelines, data warehouse e streaming.', tags: ['dados', 'etl', 'pipeline'] },
+            { id: 'database-administrator', name: 'Database Administrator', icon: '🗃️', category: 'data', description: 'DBA com otimização, backup, replicação e alta disponibilidade.', tags: ['database', 'sql', 'admin'] },
+
+            // DevOps & Cloud
+            { id: 'azure-infra-engineer', name: 'Azure Infra Engineer', icon: '🔷', category: 'devops', description: 'Engenheiro Azure com ARM templates, AKS e Azure DevOps.', tags: ['azure', 'cloud', 'microsoft'] },
+            { id: 'aws-solutions-architect', name: 'AWS Solutions Architect', icon: '🟠', category: 'devops', description: 'Arquiteto AWS com well-architected framework e serviços avançados.', tags: ['aws', 'cloud', 'arquitetura'] },
+            { id: 'gcp-engineer', name: 'GCP Engineer', icon: '🔵', category: 'devops', description: 'Engenheiro GCP com BigQuery, GKE e serviços Google Cloud.', tags: ['gcp', 'cloud', 'google'] },
+
+            // Security
+            { id: 'penetration-tester', name: 'Penetration Tester', icon: '🔓', category: 'security', description: 'Pentester com metodologias OWASP, exploits e reporting.', tags: ['pentest', 'hacking', 'segurança'] },
+            { id: 'security-engineer', name: 'Security Engineer', icon: '🛡️', category: 'security', description: 'Engenheiro de segurança com SAST, DAST, compliance e hardening.', tags: ['segurança', 'compliance', 'proteção'] },
+
+            // Quality
+            { id: 'test-automator', name: 'Test Automator', icon: '🤖', category: 'testing', description: 'Automação de testes com Selenium, Cypress, Playwright e CI/CD.', tags: ['automação', 'testes', 'ci'] },
+            { id: 'performance-engineer', name: 'Performance Engineer', icon: '⚡', category: 'testing', description: 'Engenheiro de performance com profiling, load testing e otimização.', tags: ['performance', 'otimização', 'profiling'] },
+
+            // Docs
+            { id: 'documentation-engineer', name: 'Documentation Engineer', icon: '📚', category: 'documentation', description: 'Engenheiro de documentação com docs-as-code, Docusaurus e versioning.', tags: ['docs', 'documentação', 'knowledge'] },
+
+            // Product & Design
+            { id: 'ux-researcher', name: 'UX Researcher', icon: '🔍', category: 'product', description: 'Pesquisador UX com entrevistas, testes de usabilidade e personas.', tags: ['ux', 'pesquisa', 'usuário'] },
+            { id: 'ui-designer', name: 'UI Designer', icon: '🎨', category: 'product', description: 'Designer UI com design systems, Figma e prototipagem.', tags: ['ui', 'design', 'figma'] },
+
+            // Special
+            { id: 'debugger', name: 'Debugger', icon: '🐛', category: 'testing', description: 'Especialista em debugging com análise de stack traces, logs e reprodução.', tags: ['debug', 'bugs', 'análise'] },
+            { id: 'error-detective', name: 'Error Detective', icon: '🔎', category: 'testing', description: 'Detetive de erros com análise de causa raiz e prevenção.', tags: ['erros', 'análise', 'prevenção'] },
+            { id: 'refactoring-specialist', name: 'Refactoring Specialist', icon: '♻️', category: 'development', description: 'Especialista em refatoração com patterns, code smells e clean code.', tags: ['refatoração', 'clean code', 'patterns'] },
+            { id: 'legacy-modernizer', name: 'Legacy Modernizer', icon: '🔄', category: 'development', description: 'Moderniza código legado com migração gradual e testes.', tags: ['legado', 'migração', 'modernização'] },
+            { id: 'architect-reviewer', name: 'Architect Reviewer', icon: '🏛️', category: 'development', description: 'Revisa arquitetura com ADRs, trade-offs e recomendações.', tags: ['arquitetura', 'review', 'decisões'] },
+        ];
+
+        const webSkills = [
+            { id: 'web-copywriting', name: '01 - Copywriting', icon: '✍️', category: 'marketing', description: 'Copy persuasiva para landing pages e vendas.' },
+            { id: 'web-seo', name: '02 - SEO Audit', icon: '🔍', category: 'marketing', description: 'Auditoria SEO completa de páginas.' },
+            { id: 'web-pricing', name: '03 - Pricing Strategy', icon: '💰', category: 'marketing', description: 'Estratégias de precificação.' },
+            { id: 'web-python', name: '04 - Python Pro', icon: '🐍', category: 'development', description: 'Desenvolvimento Python avançado.' },
+            { id: 'web-api', name: '05 - API Designer', icon: '🔌', category: 'development', description: 'Design de APIs RESTful.' },
+            { id: 'web-react', name: '06 - React Best Practices', icon: '⚛️', category: 'development', description: 'Melhores práticas React.' },
+            { id: 'web-fastapi', name: '07 - FastAPI Expert', icon: '⚡', category: 'development', description: 'APIs com FastAPI.' },
+            { id: 'web-nextjs', name: '08 - Next.js Dev', icon: '▲', category: 'development', description: 'Desenvolvimento Next.js.' },
+            { id: 'web-excel', name: '09 - Excel Analysis', icon: '📊', category: 'data', description: 'Análise de dados em Excel.' },
+            { id: 'web-database', name: '10 - Database Design', icon: '🗄️', category: 'development', description: 'Modelagem de banco de dados.' },
+        ];
+
+        const workflows = [
+            { id: 'wf-fullstack', name: 'Full Stack Feature', icon: '🔧', category: 'development', description: 'Implementação completa de feature: PRD → Backend → Frontend → Testes → Deploy.' },
+            { id: 'wf-launch', name: 'Product Launch', icon: '🚀', category: 'marketing', description: 'Lançamento completo: Estratégia → Copy → Landing → Email → Analytics.' },
+            { id: 'wf-security', name: 'Security Audit', icon: '🔐', category: 'security', description: 'Auditoria de segurança: Code Review → Pentest → Fixes → Relatório.' },
+            { id: 'wf-refactor', name: 'Legacy Refactor', icon: '♻️', category: 'development', description: 'Refatoração: Análise → Testes → Refactor → Validação → Docs.' },
+            { id: 'wf-data', name: 'Data Pipeline', icon: '📊', category: 'data', description: 'Pipeline de dados: ETL → Transform → Análise → Dashboard → Alertas.' },
+            { id: 'wf-api', name: 'API Development', icon: '🔌', category: 'development', description: 'Desenvolvimento de API: Design → Implement → Testes → Docs → Deploy.' },
+        ];
+
+        // Current state
+        let currentTab = 'skills';
+        let currentCategory = 'all';
+        let searchTerm = '';
+
+        // DOM Elements
+        const grid = document.getElementById('grid');
+        const searchInput = document.getElementById('searchInput');
+        const modalOverlay = document.getElementById('modalOverlay');
+
+        // Get data for current tab
+        function getCurrentData() {
+            switch (currentTab) {
+                case 'skills': return skills;
+                case 'agents': return agents;
+                case 'web': return webSkills;
+                case 'workflows': return workflows;
+                default: return skills;
+            }
+        }
+
+        // Filter data
+        function filterData(data) {
+            return data.filter(item => {
+                const matchesCategory = currentCategory === 'all' || item.category === currentCategory;
+                const matchesSearch = searchTerm === '' ||
+                    item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                    item.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                    (item.tags && item.tags.some(t => t.toLowerCase().includes(searchTerm.toLowerCase())));
+                return matchesCategory && matchesSearch;
+            });
+        }
+
+        // Render grid
+        function renderGrid() {
+            const data = filterData(getCurrentData());
+
+            if (data.length === 0) {
+                grid.innerHTML = `
+                    <div class="empty-state" style="grid-column: 1 / -1;">
+                        <div class="empty-state-icon">🔍</div>
+                        <p>Nenhum resultado encontrado</p>
+                    </div>
+                `;
+                return;
+            }
+
+            grid.innerHTML = data.map(item => `
+                <div class="card" onclick="openModal('${item.id}')">
+                    <div class="card-header">
+                        <div>
+                            <div class="card-icon">${item.icon}</div>
+                            <div class="card-title">${item.name}</div>
+                        </div>
+                        <span class="card-category">${item.category}</span>
+                    </div>
+                    <p class="card-description">${item.description}</p>
+                    ${item.tags ? `
+                        <div class="card-tags">
+                            ${item.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
+                        </div>
+                    ` : ''}
+                </div>
+            `).join('');
+        }
+
+        // Open modal
+        function openModal(id) {
+            const allData = [...skills, ...agents, ...webSkills, ...workflows];
+            const item = allData.find(i => i.id === id);
+            if (!item) return;
+
+            document.getElementById('modalIcon').textContent = item.icon;
+            document.getElementById('modalTitle').textContent = item.name;
+
+            let bodyHTML = `
+                <div class="modal-section">
+                    <h4>Descrição</h4>
+                    <p>${item.description}</p>
+                </div>
+
+                <div class="modal-section">
+                    <h4>Categoria</h4>
+                    <p>${item.category}</p>
+                </div>
+            `;
+
+            if (item.tags) {
+                bodyHTML += `
+                    <div class="modal-section">
+                        <h4>Tags</h4>
+                        <div class="card-tags" style="margin-top: 0.5rem;">
+                            ${item.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+
+            if (item.usage) {
+                bodyHTML += `
+                    <div class="modal-section">
+                        <h4>Como usar</h4>
+                        <div class="code-block">
+                            <button class="copy-btn" onclick="copyToClipboard('${item.usage}')">Copiar</button>
+                            ${item.usage}
+                        </div>
+                    </div>
+                `;
+            }
+
+            // Quick invoke examples
+            const invokeExample = currentTab === 'agents'
+                ? `Use o agent ${item.id} para [sua tarefa]`
+                : `Ative a skill ${item.id}: [sua solicitação]`;
+
+            bodyHTML += `
+                <div class="modal-section">
+                    <h4>Invocar no Claude</h4>
+                    <div class="code-block">
+                        <button class="copy-btn" onclick="copyToClipboard('${invokeExample}')">Copiar</button>
+                        ${invokeExample}
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('modalBody').innerHTML = bodyHTML;
+            modalOverlay.classList.add('active');
+        }
+
+        // Close modal
+        function closeModal() {
+            modalOverlay.classList.remove('active');
+        }
+
+        // Copy to clipboard
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                alert('Copiado para a área de transferência!');
+            });
+        }
+
+        // Event Listeners
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                currentTab = tab.dataset.tab;
+                renderGrid();
+            });
+        });
+
+        document.querySelectorAll('.category-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentCategory = btn.dataset.category;
+                renderGrid();
+            });
+        });
+
+        searchInput.addEventListener('input', (e) => {
+            searchTerm = e.target.value;
+            renderGrid();
+        });
+
+        modalOverlay.addEventListener('click', (e) => {
+            if (e.target === modalOverlay) closeModal();
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeModal();
+        });
+
+        // Initial render
+        renderGrid();
+    </script>
+</body>
+</html>

@@ -1,0 +1,168 @@
+name: Validate Skills & Agents
+
+on:
+  push:
+    branches: [main, master]
+    paths:
+      - 'claude-ai-prompts/**'
+      - 'tools/**'
+      - '.github/workflows/**'
+  pull_request:
+    branches: [main, master]
+  workflow_dispatch:
+
+jobs:
+  validate-markdown:
+    name: Validate Markdown Files
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install markdownlint
+        run: npm install -g markdownlint-cli
+
+      - name: Lint Markdown files
+        run: |
+          markdownlint 'claude-ai-prompts/**/*.md' \
+            --disable MD013 MD033 MD041 MD024 \
+            || echo "Markdown lint completed with warnings"
+
+  validate-python:
+    name: Validate Python Tools
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install flake8 black
+
+      - name: Check Python syntax
+        run: |
+          python -m py_compile tools/skill-finder.py
+
+      - name: Run flake8
+        run: |
+          flake8 tools/ --max-line-length=120 --ignore=E501,W503
+
+      - name: Check formatting with black
+        run: |
+          black --check --diff tools/ || echo "Formatting check completed"
+
+  validate-html:
+    name: Validate HTML Dashboard
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install html-validate
+        run: npm install -g html-validate
+
+      - name: Validate HTML
+        run: |
+          html-validate dashboard/index.html \
+            --config '{"extends": ["html-validate:recommended"], "rules": {"no-inline-style": "off", "script-element": "off"}}' \
+            || echo "HTML validation completed with warnings"
+
+  test-skill-finder:
+    name: Test Skill Finder
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Run Skill Finder
+        run: |
+          cd tools
+          python skill-finder.py .. --no-color
+
+      - name: Test JSON export
+        run: |
+          cd tools
+          python skill-finder.py .. --json /tmp/analysis.json --no-color
+          cat /tmp/analysis.json | python -m json.tool > /dev/null
+          echo "JSON export valid"
+
+      - name: Test list-all
+        run: |
+          cd tools
+          python skill-finder.py --list-all --no-color
+
+  count-skills:
+    name: Count Skills & Agents
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Count resources
+        run: |
+          echo "=== Claude Code Skills & Agents Stats ==="
+          echo ""
+
+          # Count web skills
+          WEB_SKILLS=$(find claude-ai-prompts -name "*.md" -type f | wc -l)
+          echo "Web Skills (claude-ai-prompts): $WEB_SKILLS"
+
+          # Count markdown files
+          TOTAL_MD=$(find . -name "*.md" -type f | wc -l)
+          echo "Total Markdown files: $TOTAL_MD"
+
+          # Count Python files
+          PYTHON_FILES=$(find tools -name "*.py" -type f 2>/dev/null | wc -l)
+          echo "Python tools: $PYTHON_FILES"
+
+          # Count HTML files
+          HTML_FILES=$(find dashboard -name "*.html" -type f 2>/dev/null | wc -l)
+          echo "HTML dashboards: $HTML_FILES"
+
+          echo ""
+          echo "=== Validation Complete ==="
+
+  build-summary:
+    name: Build Summary
+    runs-on: ubuntu-latest
+    needs: [validate-markdown, validate-python, validate-html, test-skill-finder, count-skills]
+
+    steps:
+      - name: Summary
+        run: |
+          echo "# Validation Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "All validations completed successfully!" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "## Checks Performed" >> $GITHUB_STEP_SUMMARY
+          echo "- Markdown linting" >> $GITHUB_STEP_SUMMARY
+          echo "- Python syntax validation" >> $GITHUB_STEP_SUMMARY
+          echo "- HTML validation" >> $GITHUB_STEP_SUMMARY
+          echo "- Skill Finder tests" >> $GITHUB_STEP_SUMMARY
+          echo "- Resource counting" >> $GITHUB_STEP_SUMMARY

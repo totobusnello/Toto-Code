@@ -1,6 +1,6 @@
 # Skills para Claude.ai (Web)
 
-> 40 skills exportadas para usar no Claude.ai (interface web)
+> 60 skills exportadas para usar no Claude.ai (interface web)
 
 ## Como Usar
 
@@ -35,7 +35,7 @@ Se tiver acesso a API ou custom instructions:
 
 ---
 
-## Skills Exportadas (40 Total)
+## Skills Exportadas (60 Total)
 
 ### Marketing & Copywriting (10 skills)
 
@@ -72,22 +72,62 @@ Se tiver acesso a API ou custom instructions:
 | 39 | `39-free-tool-strategy.md` | Estrategia de ferramentas gratuitas |
 | 19 | `19-brainstorming.md` | Brainstorming estruturado |
 
-### Desenvolvimento (5 skills)
+### Desenvolvimento Frontend (6 skills)
+
+| # | Arquivo | Descricao |
+|---|---------|-----------|
+| 06 | `06-react-best-practices.md` | Boas praticas React |
+| 27 | `27-nextjs.md` | Next.js development |
+| 41 | `41-typescript-pro.md` | TypeScript avancado |
+| 51 | `51-vue-expert.md` | Vue.js com Composition API |
+| 59 | `59-accessibility.md` | Acessibilidade web (WCAG) |
+| 60 | `60-performance.md` | Performance optimization |
+
+### Desenvolvimento Backend (7 skills)
 
 | # | Arquivo | Descricao |
 |---|---------|-----------|
 | 04 | `04-python-pro.md` | Python avancado |
 | 05 | `05-api-designer.md` | Design de APIs REST |
-| 06 | `06-react-best-practices.md` | Boas praticas React |
 | 16 | `16-fastapi.md` | FastAPI expert |
-| 27 | `27-nextjs.md` | Next.js development |
+| 45 | `45-graphql.md` | GraphQL schemas e resolvers |
+| 52 | `52-rust-engineer.md` | Rust idiomatico e seguro |
+| 53 | `53-golang-pro.md` | Go concorrente e eficiente |
+| 55 | `55-nestjs-expert.md` | NestJS APIs escaláveis |
 
-### Dados & Banco de Dados (2 skills)
+### Frameworks Web (2 skills)
+
+| # | Arquivo | Descricao |
+|---|---------|-----------|
+| 54 | `54-django-developer.md` | Django full-stack |
+| 56 | `56-flutter-expert.md` | Flutter mobile apps |
+
+### Dados & Banco de Dados (4 skills)
 
 | # | Arquivo | Descricao |
 |---|---------|-----------|
 | 25 | `25-excel-analysis.md` | Analise de dados em Excel |
 | 28 | `28-database-design.md` | Design de banco de dados |
+| 48 | `48-postgresql.md` | PostgreSQL otimizacao |
+| 49 | `49-redis.md` | Redis caching e estruturas |
+
+### DevOps & Cloud (6 skills)
+
+| # | Arquivo | Descricao |
+|---|---------|-----------|
+| 42 | `42-kubernetes.md` | Kubernetes deployments |
+| 43 | `43-terraform.md` | Terraform IaC |
+| 44 | `44-docker.md` | Docker otimizado |
+| 46 | `46-aws-architect.md` | AWS Well-Architected |
+| 47 | `47-cicd-pipeline.md` | CI/CD pipelines |
+| 50 | `50-monitoring.md` | Monitoring & observability |
+
+### Data Engineering & ML (2 skills)
+
+| # | Arquivo | Descricao |
+|---|---------|-----------|
+| 57 | `57-ml-engineer.md` | Machine Learning end-to-end |
+| 58 | `58-data-pipeline.md` | ETL/ELT pipelines |
 
 ### Documentos Office (4 skills)
 
@@ -129,7 +169,58 @@ Se tiver acesso a API ou custom instructions:
 
 ---
 
-## Dicas de Uso por Categoria
+## Resumo por Categoria
+
+| Categoria | Qtd | Principais Skills |
+|-----------|-----|-------------------|
+| Marketing & Copy | 10 | copywriting, seo, pricing, email |
+| CRO & Otimizacao | 7 | page-cro, ab-testing, analytics |
+| SEO & Growth | 3 | schema-markup, brainstorming |
+| Frontend | 6 | react, nextjs, typescript, vue, performance |
+| Backend | 7 | python, fastapi, graphql, rust, go, nestjs |
+| Frameworks | 2 | django, flutter |
+| Dados & DB | 4 | excel, postgresql, redis, database-design |
+| DevOps & Cloud | 6 | kubernetes, terraform, docker, aws, cicd |
+| Data/ML | 2 | ml-engineer, data-pipeline |
+| Documentos | 4 | xlsx, docx, pptx, pdf |
+| Apresentacoes | 1 | marp |
+| Qualidade | 4 | code-review, tdd, debugging |
+| Security | 3 | pentest, burp, sqlmap |
+| Produto | 1 | product-owner |
+| **TOTAL** | **60** | |
+
+---
+
+## Top 15 Mais Uteis
+
+### Marketing
+1. **01-copywriting.md** - Escrita persuasiva para qualquer contexto
+2. **17-marketing-psychology.md** - Gatilhos mentais e persuasao
+3. **30-page-cro.md** - Otimizacao de conversao
+
+### Desenvolvimento
+4. **41-typescript-pro.md** - TypeScript avancado com generics
+5. **06-react-best-practices.md** - React moderno com hooks
+6. **27-nextjs.md** - Next.js App Router
+7. **16-fastapi.md** - APIs Python rapidas
+
+### DevOps
+8. **42-kubernetes.md** - K8s deployments
+9. **44-docker.md** - Dockerfiles otimizados
+10. **47-cicd-pipeline.md** - GitHub Actions
+
+### Dados
+11. **48-postgresql.md** - SQL otimizado
+12. **57-ml-engineer.md** - ML end-to-end
+
+### Qualidade
+13. **13-tdd-guide.md** - Test-Driven Development
+14. **12-code-review.md** - Revisao de codigo
+15. **60-performance.md** - Otimizacao de performance
+
+---
+
+## Dicas de Uso
 
 ### Para Marketing/Copywriting
 ```
@@ -143,30 +234,9 @@ Escreva copy para:
 - Objetivo: [conversao/awareness/etc]
 ```
 
-### Para SEO e CRO
-```
-[Cole 02-seo-audit.md, 30-page-cro.md ou 40-programmatic-seo.md]
-
----
-
-Analise e otimize: [URL ou descricao]
-```
-
-### Para Documentos Office
-```
-[Cole 09-xlsx-excel.md, 10-docx-word.md ou 20-pptx-powerpoint.md]
-
----
-
-Crie um [documento] com:
-- [requisito 1]
-- [requisito 2]
-- [requisito 3]
-```
-
 ### Para Desenvolvimento
 ```
-[Cole 06-react-best-practices.md ou 27-nextjs.md]
+[Cole 41-typescript-pro.md ou 06-react-best-practices.md]
 
 ---
 
@@ -174,57 +244,27 @@ Revise/crie este codigo:
 [seu codigo aqui]
 ```
 
+### Para DevOps
+```
+[Cole 42-kubernetes.md ou 44-docker.md]
+
+---
+
+Configure para:
+- Aplicacao: [tipo]
+- Ambiente: [prod/staging]
+- Requisitos: [HA, scaling, etc]
+```
+
 ### Para Security
 ```
-[Cole 11-pentest-checklist.md, 31-burp-suite.md ou 32-sqlmap.md]
+[Cole 11-pentest-checklist.md]
 
 ---
 
 Faca uma analise de seguranca de: [alvo]
 ```
 
-### Para A/B Testing
-```
-[Cole 33-ab-testing.md]
-
 ---
 
-Crie um plano de testes para: [feature/pagina]
-```
-
----
-
-## Resumo por Tamanho
-
-| Categoria | Qtd | Skills |
-|-----------|-----|--------|
-| Marketing & Copy | 10 | copywriting, seo, pricing, launch, email, psychology, competitor, copy-editing, social, referral |
-| CRO & Otimizacao | 7 | page-cro, ab-testing, analytics, popup, form, onboarding, programmatic-seo |
-| SEO & Growth | 3 | schema-markup, free-tool, brainstorming |
-| Desenvolvimento | 5 | python, api, react, fastapi, nextjs |
-| Dados | 2 | excel-analysis, database-design |
-| Documentos | 4 | xlsx, docx, pptx, pdf |
-| Apresentacoes | 1 | marp |
-| Qualidade | 4 | code-review, tdd, debugging, git |
-| Security | 3 | pentest, burp, sqlmap |
-| Produto | 1 | product-owner |
-| **TOTAL** | **40** | |
-
----
-
-## Top 10 Mais Uteis
-
-1. **01-copywriting.md** - Escrita persuasiva para qualquer contexto
-2. **30-page-cro.md** - Otimizacao de conversao de paginas
-3. **17-marketing-psychology.md** - Gatilhos mentais e persuasao
-4. **08-email-sequence.md** - Sequencias de email completas
-5. **33-ab-testing.md** - Framework completo de testes A/B
-6. **06-react-best-practices.md** - Boas praticas React
-7. **13-tdd-guide.md** - Test-Driven Development
-8. **03-pricing-strategy.md** - Estrategia de precos
-9. **26-product-owner.md** - Gestao de produto
-10. **40-programmatic-seo.md** - SEO em escala
-
----
-
-*Exportado de ~/.claude/skills/ em 2026-01-25*
+*Atualizado em 2026-01-26 - 60 skills totais*
