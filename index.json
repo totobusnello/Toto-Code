@@ -1,11 +1,40 @@
 {
-  "version": "1.0.0",
+  "version": "1.1.0",
   "updated": "2026-01-26",
   "summary": {
-    "total_skills": 94,
-    "total_agents": 16,
+    "total_skills": 96,
+    "total_agents": 17,
     "total_commands": 21,
-    "total_plugins": 27
+    "total_plugins": 27,
+    "external_sources": 1
+  },
+  "external": {
+    "nuvini-claude": {
+      "source": "https://github.com/Nuvinigroup/claude",
+      "update_script": "external/nuvini-claude/update.sh",
+      "skills": [
+        {
+          "name": "autonomous-dev",
+          "category": "development",
+          "file": "skills/autonomous-dev/SKILL.md",
+          "triggers": ["autonomous agent", "ralph:", "create prd", "user stories"]
+        },
+        {
+          "name": "website-replicator",
+          "category": "tools",
+          "file": "skills/website-replicator/SKILL.md",
+          "triggers": ["replicate website", "clone site", "mirror website"]
+        }
+      ],
+      "agents": [
+        {
+          "name": "project-orchestrator",
+          "category": "orchestration",
+          "file": "agents/project-orchestrator.md",
+          "model": "opus"
+        }
+      ]
+    }
   },
   "skills": {
     "web": [
