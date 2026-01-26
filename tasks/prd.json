@@ -1,0 +1,253 @@
+{
+  "project": "GalapagosApp v2",
+  "branchName": "feature/galapagos-v2-upgrade",
+  "description": "Upgrade do GalapagosApp com backend remoto (Railway + PocketBase), segurança robusta e deploy iOS",
+  "createdAt": "2026-01-26T12:00:00Z",
+  "targetRepo": "totobusnello/GalapagosApp",
+  "verification": {
+    "typecheck": "npx tsc --noEmit",
+    "test": "npm run test",
+    "lint": "npx eslint src/",
+    "build": "eas build --platform ios --profile preview --local"
+  },
+  "userStories": [
+    {
+      "id": "US-001",
+      "title": "Deploy PocketBase no Railway",
+      "description": "Como usuário, quero que meus dados sejam salvos na nuvem para acessar de qualquer dispositivo",
+      "acceptanceCriteria": [
+        "PocketBase rodando no Railway.com",
+        "URL pública HTTPS configurada",
+        "Collections criadas: users, portfolios, historical",
+        "Health check endpoint funcionando"
+      ],
+      "priority": 1,
+      "phase": "infraestrutura",
+      "dependsOn": [],
+      "passes": false,
+      "attempts": 0,
+      "notes": ""
+    },
+    {
+      "id": "US-002",
+      "title": "Configurar Collections no PocketBase",
+      "description": "Como desenvolvedor, preciso das collections corretas no PocketBase para o app funcionar",
+      "acceptanceCriteria": [
+        "Collection portfolios com campos corretos",
+        "Collection historical com campos corretos",
+        "Rules de acesso configuradas (RLS)",
+        "Índices criados para performance"
+      ],
+      "priority": 1,
+      "phase": "infraestrutura",
+      "dependsOn": ["US-001"],
+      "passes": false,
+      "attempts": 0,
+      "notes": ""
+    },
+    {
+      "id": "US-003",
+      "title": "Atualizar Config do App para Railway",
+      "description": "Como desenvolvedor, preciso que o app aponte para o backend no Railway",
+      "acceptanceCriteria": [
+        "Variável POCKETBASE_URL configurada",
+        "Fallback para localhost em dev",
+        "Detecção automática de ambiente",
+        "Retry automático em falhas de conexão"
+      ],
+      "priority": 1,
+      "phase": "infraestrutura",
+      "dependsOn": ["US-002"],
+      "passes": false,
+      "attempts": 0,
+      "notes": ""
+    },
+    {
+      "id": "US-004",
+      "title": "Upgrade Criptografia para AES-256",
+      "description": "Como usuário, quero que meus dados financeiros sejam criptografados com algoritmo seguro",
+      "acceptanceCriteria": [
+        "Substituir XOR por AES-256-GCM",
+        "Chave derivada com PBKDF2",
+        "IV único por operação",
+        "Dados em cache sempre criptografados"
+      ],
+      "priority": 2,
+      "phase": "seguranca",
+      "dependsOn": [],
+      "passes": false,
+      "attempts": 0,
+      "notes": "SecurityService.js já existe, precisa upgrade"
+    },
+    {
+      "id": "US-005",
+      "title": "Implementar Session Timeout",
+      "description": "Como usuário, quero logout automático após inatividade para proteger meus dados",
+      "acceptanceCriteria": [
+        "Timeout de 5 minutos de inatividade",
+        "Timer resetado em qualquer interação",
+        "Aviso 30 segundos antes do logout",
+        "Logout limpa cache criptografado"
+      ],
+      "priority": 2,
+      "phase": "seguranca",
+      "dependsOn": [],
+      "passes": false,
+      "attempts": 0,
+      "notes": ""
+    },
+    {
+      "id": "US-006",
+      "title": "Remover Console.logs de Produção",
+      "description": "Como desenvolvedor, preciso garantir que dados sensíveis não vazem nos logs",
+      "acceptanceCriteria": [
+        "Todos os console.log condicionais com __DEV__",
+        "Nenhum dado financeiro logado",
+        "Logger centralizado criado",
+        "Build de produção sem logs"
+      ],
+      "priority": 2,
+      "phase": "seguranca",
+      "dependsOn": [],
+      "passes": false,
+      "attempts": 0,
+      "notes": "Já parcialmente implementado com __DEV__"
+    },
+    {
+      "id": "US-007",
+      "title": "Hardening WebView",
+      "description": "Como usuário, quero que a WebView seja segura contra ataques",
+      "acceptanceCriteria": [
+        "Whitelist de domínios estrita",
+        "Bloquear navegação para URLs não permitidas",
+        "Limpar cookies ao logout",
+        "Timeout de sessão WebView"
+      ],
+      "priority": 2,
+      "phase": "seguranca",
+      "dependsOn": [],
+      "passes": false,
+      "attempts": 0,
+      "notes": "isUrlAllowed já existe no SecurityService"
+    },
+    {
+      "id": "US-008",
+      "title": "Configurar EAS Build para iOS",
+      "description": "Como desenvolvedor, preciso configurar o build para gerar o app iOS",
+      "acceptanceCriteria": [
+        "eas.json configurado para iOS",
+        "Apple Developer account vinculada",
+        "Provisioning profile configurado",
+        "Build passando sem erros"
+      ],
+      "priority": 1,
+      "phase": "ios-build",
+      "dependsOn": ["US-003"],
+      "passes": false,
+      "attempts": 0,
+      "notes": "eas.json já existe, verificar configs"
+    },
+    {
+      "id": "US-009",
+      "title": "Configurar TestFlight",
+      "description": "Como usuário, quero instalar o app no meu iPhone via TestFlight",
+      "acceptanceCriteria": [
+        "App submetido ao TestFlight",
+        "Build disponível para instalação",
+        "Convite enviado para tester",
+        "App funcionando no iPhone real"
+      ],
+      "priority": 1,
+      "phase": "ios-build",
+      "dependsOn": ["US-008"],
+      "passes": false,
+      "attempts": 0,
+      "notes": ""
+    },
+    {
+      "id": "US-010",
+      "title": "Adaptar UI para iPhone",
+      "description": "Como usuário iPhone, quero que o app tenha boa aparência no meu dispositivo",
+      "acceptanceCriteria": [
+        "Safe areas configuradas corretamente",
+        "Notch/Dynamic Island respeitados",
+        "Keyboard avoiding view",
+        "Haptic feedback em ações"
+      ],
+      "priority": 2,
+      "phase": "ux",
+      "dependsOn": ["US-009"],
+      "passes": false,
+      "attempts": 0,
+      "notes": ""
+    },
+    {
+      "id": "US-011",
+      "title": "Gráfico de Evolução Patrimonial",
+      "description": "Como usuário, quero ver um gráfico da evolução do meu patrimônio ao longo do tempo",
+      "acceptanceCriteria": [
+        "Gráfico de linha com histórico",
+        "Período selecionável: 7d, 30d, 90d",
+        "Tooltip com valor ao tocar",
+        "Loading state enquanto carrega"
+      ],
+      "priority": 3,
+      "phase": "ux",
+      "dependsOn": ["US-003"],
+      "passes": false,
+      "attempts": 0,
+      "notes": "react-native-chart-kit já instalado"
+    },
+    {
+      "id": "US-012",
+      "title": "Push Notifications Funcionais",
+      "description": "Como usuário, quero receber notificações quando meu portfólio mudar significativamente",
+      "acceptanceCriteria": [
+        "Permissão solicitada no primeiro uso",
+        "Notificação quando variação > 1%",
+        "Configuração on/off no app",
+        "Deep link para dashboard"
+      ],
+      "priority": 3,
+      "phase": "ux",
+      "dependsOn": ["US-009"],
+      "passes": false,
+      "attempts": 0,
+      "notes": "PushNotificationService já existe"
+    },
+    {
+      "id": "US-013",
+      "title": "Offline-First com Sync",
+      "description": "Como usuário, quero usar o app mesmo sem internet e sincronizar depois",
+      "acceptanceCriteria": [
+        "App funciona 100% offline",
+        "Indicador de status online/offline",
+        "Sync automático quando reconectar",
+        "Resolução de conflitos"
+      ],
+      "priority": 3,
+      "phase": "ux",
+      "dependsOn": ["US-003"],
+      "passes": false,
+      "attempts": 0,
+      "notes": "CacheService já implementa cache local"
+    },
+    {
+      "id": "US-014",
+      "title": "Biometria para Acesso",
+      "description": "Como usuário, quero usar Face ID/Touch ID para abrir o app",
+      "acceptanceCriteria": [
+        "Solicitar biometria ao abrir",
+        "Fallback para PIN/senha",
+        "Opção de desabilitar",
+        "Não mostrar valores se não autenticado"
+      ],
+      "priority": 3,
+      "phase": "ux",
+      "dependsOn": ["US-005"],
+      "passes": false,
+      "attempts": 0,
+      "notes": "expo-local-authentication já instalado"
+    }
+  ]
+}
