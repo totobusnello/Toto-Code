@@ -1,0 +1,242 @@
+name: Claude Code Agents
+
+on:
+  # Trigger via issue/PR comments
+  issue_comment:
+    types: [created]
+
+  # Trigger manually
+  workflow_dispatch:
+    inputs:
+      agent:
+        description: 'Agent to use (e.g., code-reviewer, security-auditor)'
+        required: true
+        default: 'code-reviewer'
+      prompt:
+        description: 'Prompt/task for the agent'
+        required: true
+        default: 'Review this codebase'
+
+  # Trigger on PR for auto code review
+  pull_request:
+    types: [opened, synchronize]
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+
+jobs:
+  # Job 1: Handle comment triggers like "/agent security-auditor"
+  handle-comment:
+    if: github.event_name == 'issue_comment' && startsWith(github.event.comment.body, '/agent')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Claude Code
+        run: npm install -g @anthropic-ai/claude-code
+
+      - name: Parse agent command
+        id: parse
+        env:
+          COMMENT: ${{ github.event.comment.body }}
+        run: |
+          # Sanitize input - only allow alphanumeric, spaces, hyphens, underscores
+          SANITIZED=$(echo "$COMMENT" | tr -cd '[:alnum:][:space:]-_./,')
+
+          # Extract agent name: /agent <agent-name> [prompt]
+          AGENT=$(echo "$SANITIZED" | sed -n 's|^/agent \([^ ]*\).*|\1|p')
+          PROMPT=$(echo "$SANITIZED" | sed 's|^/agent [^ ]* *||')
+
+          # Validate agent name (alphanumeric and hyphens only)
+          if ! echo "$AGENT" | grep -qE '^[a-zA-Z0-9-]+$'; then
+            echo "Invalid agent name"
+            exit 1
+          fi
+
+          if [ -z "$PROMPT" ]; then
+            PROMPT="Execute your default task on this codebase"
+          fi
+
+          echo "agent=$AGENT" >> $GITHUB_OUTPUT
+          # Use base64 to safely pass prompt
+          echo "prompt=$(echo "$PROMPT" | base64 -w 0)" >> $GITHUB_OUTPUT
+
+      - name: Run Claude Code Agent
+        id: claude
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          AGENT: ${{ steps.parse.outputs.agent }}
+          PROMPT_B64: ${{ steps.parse.outputs.prompt }}
+        run: |
+          set +x  # Disable command echoing to protect secrets
+
+          PROMPT=$(echo "$PROMPT_B64" | base64 -d)
+
+          # Map common agent names to full prompts
+          case "$AGENT" in
+            "code-reviewer"|"review")
+              FULL_PROMPT="Act as a code-reviewer agent. Review the code changes and provide detailed feedback on: code quality, potential bugs, security issues, and suggestions for improvement. $PROMPT"
+              ;;
+            "security-auditor"|"security")
+              FULL_PROMPT="Act as a security-auditor agent. Perform a security audit of this codebase. Check for: OWASP Top 10 vulnerabilities, hardcoded secrets, insecure dependencies, and security best practices. $PROMPT"
+              ;;
+            "debugger"|"debug")
+              FULL_PROMPT="Act as a debugger agent. Analyze the code for potential bugs, edge cases, and error handling issues. $PROMPT"
+              ;;
+            "documentation-engineer"|"docs")
+              FULL_PROMPT="Act as a documentation-engineer agent. Review and suggest improvements for documentation. $PROMPT"
+              ;;
+            "refactoring-specialist"|"refactor")
+              FULL_PROMPT="Act as a refactoring-specialist agent. Analyze the code and suggest refactoring opportunities for better maintainability. $PROMPT"
+              ;;
+            "test-automator"|"test")
+              FULL_PROMPT="Act as a test-automator agent. Analyze the code and suggest tests that should be written. $PROMPT"
+              ;;
+            *)
+              FULL_PROMPT="Act as a $AGENT agent. $PROMPT"
+              ;;
+          esac
+
+          # Run Claude Code and capture output with proper error handling
+          if ! claude --print "$FULL_PROMPT" > /tmp/claude_output.txt 2>&1; then
+            echo "Claude command failed with exit code $?" >> /tmp/claude_output.txt
+          fi
+
+          echo "output_file=/tmp/claude_output.txt" >> $GITHUB_OUTPUT
+
+      - name: Post result to issue/PR
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const output = fs.readFileSync('/tmp/claude_output.txt', 'utf8');
+            const agent = process.env.AGENT;
+
+            // Truncate if too long
+            const maxLen = 60000;
+            const truncated = output.length > maxLen
+              ? output.substring(0, maxLen) + '\n\n... (truncated)'
+              : output;
+
+            const body = `## 🤖 Agent: \`${agent}\`\n\n${truncated}\n\n---\n*Powered by Claude Code*`;
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: body
+            });
+        env:
+          AGENT: ${{ steps.parse.outputs.agent }}
+
+  # Job 2: Auto code review on PRs
+  auto-review:
+    if: github.event_name == 'pull_request' && contains(github.event.pull_request.labels.*.name, 'claude-review')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Claude Code
+        run: npm install -g @anthropic-ai/claude-code
+
+      - name: Get PR diff
+        id: diff
+        env:
+          BASE_REF: ${{ github.base_ref }}
+        run: |
+          git diff "origin/$BASE_REF"...HEAD > /tmp/pr_diff.txt
+          echo "diff_file=/tmp/pr_diff.txt" >> $GITHUB_OUTPUT
+
+      - name: Run Claude Code Review
+        id: review
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          set +x  # Disable command echoing to protect secrets
+
+          # Read diff from file instead of variable expansion
+          PROMPT="Act as a code-reviewer agent. Review this PR diff and provide:
+          1. Summary of changes
+          2. Potential issues or bugs
+          3. Security concerns
+          4. Suggestions for improvement
+
+          PR Diff:
+          $(cat /tmp/pr_diff.txt | head -500)"
+
+          if ! claude --print "$PROMPT" > /tmp/review_output.txt 2>&1; then
+            echo "Review failed with exit code $?" >> /tmp/review_output.txt
+          fi
+
+      - name: Post review comment
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const output = fs.readFileSync('/tmp/review_output.txt', 'utf8');
+
+            const maxLen = 60000;
+            const truncated = output.length > maxLen
+              ? output.substring(0, maxLen) + '\n\n... (truncated)'
+              : output;
+
+            const body = `## 🔍 Claude Code Review\n\n${truncated}\n\n---\n*Automated review by Claude Code*`;
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: body
+            });
+
+  # Job 3: Manual workflow dispatch
+  manual-agent:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Claude Code
+        run: npm install -g @anthropic-ai/claude-code
+
+      - name: Run Claude Code Agent
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          AGENT: ${{ github.event.inputs.agent }}
+          PROMPT: ${{ github.event.inputs.prompt }}
+        run: |
+          set +x  # Disable command echoing to protect secrets
+
+          echo "## Running Agent: $AGENT"
+          echo "---"
+
+          if ! claude --print "Act as a $AGENT agent. $PROMPT"; then
+            echo "Agent execution failed"
+            exit 1
+          fi
