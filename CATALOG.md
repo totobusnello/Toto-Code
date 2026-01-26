@@ -1,6 +1,8 @@
 # Catalogo Completo - Skills, Agents e Recomendacoes
 
-> 688 Skills + 472 Agents organizados por categoria com recomendacoes de uso
+> 94 Skills + 16 Agents + 27 Plugins organizados por categoria com recomendacoes de uso
+>
+> *Atualizado em 2026-01-26 com contagem real verificada*
 
 ---
 
@@ -358,35 +360,66 @@ ralph: implement payment integration with Stripe
 
 ---
 
-## Skills Legacy (ln-*)
+## Resumo de Contagem (Verificado)
 
-86 skills em `~/.claude/skills/_legacy-ln/` - Sistema interno de documentacao:
-
-- `ln-001` a `ln-002`: Standards/Best practices researchers
-- `ln-100` a `ln-120`: Document pipelines
-- `ln-140`: Test docs creator
-- `ln-400` a `ln-404`: Task management
-- `ln-500` a `ln-513`: Test planning
-- `ln-600` a `ln-635`: Auditors
-- `ln-700` a `ln-782`: Infrastructure
-
-**Uso**: Geralmente nao precisa chamar diretamente - sao workflows internos.
+| Categoria | Quantidade | Localizacao |
+|-----------|------------|-------------|
+| **Skills (Web Export)** | 41 | `claude-ai-prompts/` |
+| **Skills (Plugins)** | 53 | `~/.claude/plugins/` |
+| **Skills Total** | 94 | - |
+| **Agents** | 16 | `~/.claude/plugins/` |
+| **Commands** | 21 | `~/.claude/plugins/` |
+| **Plugins Oficiais** | 27 | `~/.claude/plugins/marketplaces/` |
+| **Plugins Externos** | 30 | Integracoes de servicos |
 
 ---
 
-## Resumo de Contagem
+## Plugins Disponiveis
 
-| Categoria | Quantidade |
-|-----------|------------|
-| **Skills Ativos** | 688 |
-| **Skills Legacy** | 86 |
-| **Agents Ativos** | 472 |
-| **Agents Archived** | 15 |
-| **Command Namespaces** | 32 |
-| **Hooks** | 67 |
-| **MCPs** | 73 |
-| **Modes** | 7 |
+### Plugins Oficiais (27)
+
+**Ferramentas Core:**
+- `claude-code-setup` - Configuracao inicial
+- `ralph-loop` - Loop autonomo
+- `feature-dev` - Desenvolvimento de features
+- `pr-review-toolkit` - Review de PRs
+
+**Suporte a Linguagens (LSP):**
+- `typescript-lsp`, `pyright-lsp`, `rust-analyzer-lsp`
+- `gopls-lsp`, `jdtls-lsp` (Java), `kotlin-lsp`
+- `clangd-lsp` (C/C++), `csharp-lsp`, `swift-lsp`
+- `php-lsp`, `lua-lsp`
+
+**Qualidade de Codigo:**
+- `code-review` - Review de codigo
+- `security-guidance` - Orientacoes de seguranca
+- `code-simplifier` - Simplificacao de codigo
+
+**Desenvolvimento de Plugins:**
+- `agent-sdk-dev` - SDK para agents
+- `plugin-dev` - Desenvolvimento de plugins
+- `hookify` - Gerenciamento de hooks
+
+### Plugins Externos (Top 10)
+
+| Plugin | Servico | Status |
+|--------|---------|--------|
+| `stripe` | Pagamentos | Ativo |
+| `github` | GitHub API | Stub |
+| `gitlab` | GitLab API | Stub |
+| `slack` | Messaging | Stub |
+| `linear` | Project Management | Stub |
+| `supabase` | Database | Stub |
+| `firebase` | Backend | Stub |
+| `playwright` | Testing | Stub |
 
 ---
 
-*Catalogo gerado em 2026-01-25*
+## Fontes Externas
+
+Repositorios externos foram movidos para `SOURCES.md`.
+Symlinks quebrados foram removidos.
+
+---
+
+*Catalogo atualizado em 2026-01-26*
