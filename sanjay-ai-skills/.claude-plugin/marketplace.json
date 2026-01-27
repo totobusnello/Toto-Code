@@ -1,0 +1,52 @@
+{
+  "name": "ai-skills",
+  "owner": {
+    "name": "Sanjay"
+  },
+  "metadata": {
+    "description": "Collection of agent skills for AI coding assistants",
+    "version": "1.0.0"
+  },
+  "plugins": [
+    {
+      "name": "postgres",
+      "description": "Execute read-only SQL queries against multiple PostgreSQL databases. Supports intelligent database selection based on descriptions, blocks all write operations for safety.",
+      "source": "./",
+      "skills": [
+        "./skills/postgres"
+      ]
+    },
+    {
+      "name": "imagen",
+      "description": "Generate images using Google Gemini's AI image generation model. Cross-platform support for Windows, macOS, and Linux. Create UI mockups, icons, illustrations, diagrams, and more.",
+      "source": "./",
+      "skills": [
+        "./skills/imagen"
+      ]
+    },
+    {
+      "name": "deep-research",
+      "description": "Perform autonomous multi-step research using Gemini Deep Research Agent. Literature reviews, competitive analysis, market research with citations.",
+      "source": "./",
+      "skills": [
+        "./skills/deep-research"
+      ]
+    },
+    {
+      "name": "outline",
+      "description": "Search, read, and manage Outline wiki documents. Full CRUD operations for any Outline wiki instance (cloud or self-hosted).",
+      "source": "./",
+      "skills": [
+        "./skills/outline"
+      ]
+    },
+    {
+      "name": "jules",
+      "description": "Delegate coding tasks to Google Jules AI agent. Asynchronously fix bugs, add documentation, implement features, write tests. Works with GitHub repos. Requires: npm install -g @google/jules",
+      "source": "./",
+      "skills": [
+        "./skills/jules"
+      ]
+    }
+  ]
+}
