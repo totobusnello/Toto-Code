@@ -17,6 +17,21 @@
         "GITHUB_PERSONAL_ACCESS_TOKEN": "${GH_TOKEN}"
       },
       "description": "Gerenciar repos, PRs, issues no GitHub"
+    },
+    "filesystem": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-filesystem", "/home/user"],
+      "description": "Acesso a arquivos fora do projeto"
+    },
+    "memory": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-memory"],
+      "description": "Memória persistente entre sessões"
+    },
+    "sequential-thinking": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-sequential-thinking"],
+      "description": "Raciocínio passo-a-passo para problemas complexos"
     }
   }
 }
