@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #fff;
+        }
+        .logo {
+            font-size: 72px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        .logo span:nth-child(1) { color: #4285f4; }
+        .logo span:nth-child(2) { color: #ea4335; }
+        .logo span:nth-child(3) { color: #fbbc05; }
+        .logo span:nth-child(4) { color: #4285f4; }
+        .logo span:nth-child(5) { color: #34a853; }
+        .logo span:nth-child(6) { color: #ea4335; }
+        .search-box {
+            display: flex;
+            align-items: center;
+            border: 1px solid #dfe1e5;
+            border-radius: 24px;
+            padding: 10px 20px;
+            width: 500px;
+            box-shadow: 0 1px 6px rgba(32,33,36,.28);
+        }
+        .search-box input {
+            flex: 1;
+            border: none;
+            outline: none;
+            font-size: 16px;
+        }
+        .buttons {
+            margin-top: 30px;
+        }
+        .buttons button {
+            background: #f8f9fa;
+            border: 1px solid #f8f9fa;
+            padding: 10px 16px;
+            margin: 0 5px;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        .buttons button:hover {
+            border-color: #ddd;
+        }
+        .success-message {
+            margin-top: 40px;
+            padding: 20px;
+            background: #e8f5e9;
+            border-radius: 8px;
+            color: #2e7d32;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+    <div class="logo">
+        <span>G</span><span>o</span><span>o</span><span>g</span><span>l</span><span>e</span>
+    </div>
+    <div class="search-box">
+        <input type="text" placeholder="Pesquisar com Google">
+        <span>🔍</span>
+    </div>
+    <div class="buttons">
+        <button>Pesquisa Google</button>
+        <button>Estou com sorte</button>
+    </div>
+    <div class="success-message">
+        ✓ Playwright abriu esta página com sucesso!
+    </div>
+</body>
+</html>
