@@ -1,0 +1,238 @@
+name: PR Check
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize]
+
+permissions:
+  pull-requests: write
+  contents: read
+  id-token: write
+
+jobs:
+  check-pr-title:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check PR Title
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const prTitle = context.payload.pull_request.title;
+            console.log(`PR Title: "${prTitle}"`);
+            
+            // Conventional commit regex
+            const conventionalCommitRegex = /^(build|chore|ci|docs|feat|fix|perf|refactor|revert|style|test)(\(.+\))?!?: .+$/;
+            
+            if (!conventionalCommitRegex.test(prTitle)) {
+              const comment = `## ❌ PR Title Check Failed
+              
+              Your PR title doesn't follow the [Conventional Commits](https://www.conventionalcommits.org/) format.
+              
+              ### Expected Format:
+              \`<type>(<scope>): <subject>\`
+              
+              ### Valid Types:
+              - **feat**: A new feature (triggers minor release)
+              - **fix**: A bug fix (triggers patch release)
+              - **docs**: Documentation only changes
+              - **style**: Formatting changes
+              - **refactor**: Code changes that neither fix bugs nor add features
+              - **perf**: Performance improvements
+              - **test**: Adding or updating tests
+              - **chore**: Maintenance tasks
+              - **ci**: CI/CD changes
+              
+              ### Examples:
+              - \`feat(commands): add docker-compose-setup command\`
+              - \`fix: correct file path handling in Windows\`
+              - \`docs: update installation instructions\`
+              - \`feat!: change command argument format\` (breaking change)
+              
+              ### Your PR Title:
+              \`${prTitle}\`
+              
+              Please update your PR title to follow the conventional commits format.`;
+              
+              // Post comment
+              await github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: comment
+              });
+              
+              core.setFailed('PR title must follow Conventional Commits format');
+            } else {
+              // Extract type for version bump prediction
+              const match = prTitle.match(/^(\w+)(\(.+\))?(!)?:/);
+              const type = match[1];
+              const isBreaking = match[3] === '!' || prTitle.includes('BREAKING CHANGE');
+              
+              let versionBump = 'No version bump';
+              let emoji = '📝';
+              
+              if (isBreaking) {
+                versionBump = 'Major version bump (breaking change)';
+                emoji = '💥';
+              } else if (type === 'feat') {
+                versionBump = 'Minor version bump (new feature)';
+                emoji = '✨';
+              } else if (type === 'fix') {
+                versionBump = 'Patch version bump (bug fix)';
+                emoji = '🐛';
+              }
+              
+              const comment = `## ✅ PR Title Check Passed
+              
+              ${emoji} **Version Impact**: ${versionBump}
+              
+              Your PR title follows the conventional commits format and will be included in the automated changelog.`;
+              
+              // Check if we already commented
+              const comments = await github.rest.issues.listComments({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo
+              });
+              
+              const botComment = comments.data.find(comment => 
+                comment.user.type === 'Bot' && 
+                comment.body.includes('PR Title Check')
+              );
+              
+              if (!botComment || botComment.body.includes('Failed')) {
+                await github.rest.issues.createComment({
+                  issue_number: context.issue.number,
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  body: comment
+                });
+              }
+            }
+
+  check-commands:
+    runs-on: ubuntu-latest
+    if: contains(github.event.pull_request.title, 'command') || contains(github.event.pull_request.body, '.claude/commands')
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Check command files
+        id: check-commands
+        run: |
+          echo "Checking command files..."
+          
+          # Find all command files
+          COMMAND_FILES=$(find .claude/commands -name "*.md" -type f)
+          ISSUES_FOUND=false
+          REPORT=""
+          
+          for file in $COMMAND_FILES; do
+            filename=$(basename "$file")
+            
+            # Check for required sections
+            if ! grep -q "^# " "$file"; then
+              REPORT="${REPORT}❌ $filename: Missing title (# Command Name)\n"
+              ISSUES_FOUND=true
+            fi
+            
+            if ! grep -q "^## Instructions" "$file"; then
+              REPORT="${REPORT}❌ $filename: Missing ## Instructions section\n"
+              ISSUES_FOUND=true
+            fi
+            
+            # Check for proper markdown structure
+            if grep -q "^#\{4,\}" "$file"; then
+              REPORT="${REPORT}⚠️ $filename: Uses h4+ headers (consider using h3 max)\n"
+            fi
+          done
+          
+          echo "issues_found=$ISSUES_FOUND" >> $GITHUB_OUTPUT
+          echo "report<<EOF" >> $GITHUB_OUTPUT
+          echo -e "$REPORT" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Comment validation results
+        if: steps.check-commands.outputs.issues_found == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const report = `${{ steps.check-commands.outputs.report }}`;
+            const comment = `## 📋 Command Validation Report
+            
+            ${report}
+            
+            Please fix these issues before merging.
+            
+            ### Command Structure Requirements:
+            - Must have a title: \`# Command Name\`
+            - Must have instructions: \`## Instructions\`
+            - Should include clear step-by-step guidance
+            
+            See [CONTRIBUTING.md](CONTRIBUTING.md#command-development-guidelines) for details.`;
+            
+            await github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });
+
+  summary:
+    runs-on: ubuntu-latest
+    needs: [check-pr-title, check-commands]
+    if: always()
+    steps:
+      - name: PR Summary
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const prTitle = context.payload.pull_request.title;
+            const prBody = context.payload.pull_request.body || '';
+            
+            // Create summary
+            let summary = '## 📊 PR Summary\n\n';
+            
+            // Check for command changes
+            if (prTitle.includes('command') || prBody.includes('command')) {
+              summary += '### 📝 Command Changes Detected\n';
+              summary += 'This PR appears to modify commands. Ensure:\n';
+              summary += '- [ ] Commands are tested locally\n';
+              summary += '- [ ] Documentation is updated\n';
+              summary += '- [ ] Commands follow the standard structure\n\n';
+            }
+            
+            // Add checklist based on PR type
+            const match = prTitle.match(/^(\w+)(\(.+\))?(!)?:/);
+            if (match) {
+              const type = match[1];
+              summary += `### 🎯 PR Type: ${type}\n\n`;
+              
+              switch(type) {
+                case 'feat':
+                  summary += '**Checklist for new features:**\n';
+                  summary += '- [ ] Feature is documented\n';
+                  summary += '- [ ] Tests are included (if applicable)\n';
+                  summary += '- [ ] Breaking changes are noted\n';
+                  break;
+                case 'fix':
+                  summary += '**Checklist for bug fixes:**\n';
+                  summary += '- [ ] Issue is referenced\n';
+                  summary += '- [ ] Fix is tested\n';
+                  summary += '- [ ] Regression tests added\n';
+                  break;
+                case 'docs':
+                  summary += '**Checklist for documentation:**\n';
+                  summary += '- [ ] Links are valid\n';
+                  summary += '- [ ] Examples are correct\n';
+                  summary += '- [ ] Formatting is consistent\n';
+                  break;
+              }
+            }
+            
+            console.log(summary);

@@ -1,0 +1,235 @@
+name: Update Changelog for New Commands
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.claude/commands/**'
+  pull_request:
+    types: [closed]
+    branches: [main]
+    paths:
+      - '.claude/commands/**'
+
+jobs:
+  update-changelog:
+    if: github.event_name == 'push' || (github.event.pull_request.merged == true)
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: read
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Set up Git
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+      
+      - name: Detect new command files
+        id: detect-changes
+        run: |
+          echo "🔍 Detecting new command files..."
+          
+          # Get list of added/modified command files
+          if [ "${{ github.event_name }}" = "push" ]; then
+            # For direct pushes, compare with previous commit
+            NEW_FILES=$(git diff --name-only --diff-filter=A HEAD~1 HEAD -- '.claude/commands/*.md' || echo "")
+            MODIFIED_FILES=$(git diff --name-only --diff-filter=M HEAD~1 HEAD -- '.claude/commands/*.md' || echo "")
+          else
+            # For merged PRs, compare with merge base
+            MERGE_BASE=$(git merge-base ${{ github.event.pull_request.base.sha }} ${{ github.event.pull_request.head.sha }})
+            NEW_FILES=$(git diff --name-only --diff-filter=A $MERGE_BASE ${{ github.event.pull_request.head.sha }} -- '.claude/commands/*.md' || echo "")
+            MODIFIED_FILES=$(git diff --name-only --diff-filter=M $MERGE_BASE ${{ github.event.pull_request.head.sha }} -- '.claude/commands/*.md' || echo "")
+          fi
+          
+          echo "New files: $NEW_FILES"
+          echo "Modified files: $MODIFIED_FILES"
+          
+          # Save to outputs
+          echo "new_files<<EOF" >> $GITHUB_OUTPUT
+          echo "$NEW_FILES" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+          
+          echo "modified_files<<EOF" >> $GITHUB_OUTPUT
+          echo "$MODIFIED_FILES" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+          
+          # Check if we have any changes
+          if [ -n "$NEW_FILES" ] || [ -n "$MODIFIED_FILES" ]; then
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+          else
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+          fi
+      
+      - name: Extract command information
+        if: steps.detect-changes.outputs.has_changes == 'true'
+        id: extract-info
+        run: |
+          echo "📝 Extracting command information..."
+          
+          # Function to extract command info from file
+          extract_command_info() {
+            local file="$1"
+            local filename=$(basename "$file" .md)
+            
+            # Extract title (first line starting with #)
+            local title=$(head -n 10 "$file" | grep "^# " | head -n 1 | sed 's/^# //')
+            
+            # Extract description (first non-empty line after title that doesn't start with #)
+            local description=$(head -n 10 "$file" | sed -n '/^# /,$p' | tail -n +2 | grep -v "^#" | grep -v "^$" | head -n 1 | sed 's/^[[:space:]]*//')
+            
+            # If no description found, use title
+            if [ -z "$description" ]; then
+              description="$title"
+            fi
+            
+            echo "- \`/project:$filename\` - $description"
+          }
+          
+          # Process new files
+          NEW_COMMANDS=""
+          if [ -n "${{ steps.detect-changes.outputs.new_files }}" ]; then
+            while IFS= read -r file; do
+              if [ -n "$file" ] && [ -f "$file" ]; then
+                NEW_COMMANDS="$NEW_COMMANDS$(extract_command_info "$file")"$'\n'
+              fi
+            done <<< "${{ steps.detect-changes.outputs.new_files }}"
+          fi
+          
+          # Process modified files
+          UPDATED_COMMANDS=""
+          if [ -n "${{ steps.detect-changes.outputs.modified_files }}" ]; then
+            while IFS= read -r file; do
+              if [ -n "$file" ] && [ -f "$file" ]; then
+                UPDATED_COMMANDS="$UPDATED_COMMANDS$(extract_command_info "$file")"$'\n'
+              fi
+            done <<< "${{ steps.detect-changes.outputs.modified_files }}"
+          fi
+          
+          echo "new_commands<<EOF" >> $GITHUB_OUTPUT
+          echo "$NEW_COMMANDS" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+          
+          echo "updated_commands<<EOF" >> $GITHUB_OUTPUT
+          echo "$UPDATED_COMMANDS" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+          
+          # Count total commands
+          TOTAL_COMMANDS=$(find .claude/commands -name "*.md" | wc -l)
+          echo "total_commands=$TOTAL_COMMANDS" >> $GITHUB_OUTPUT
+      
+      - name: Update CHANGELOG.md
+        if: steps.detect-changes.outputs.has_changes == 'true'
+        run: |
+          echo "📄 Updating CHANGELOG.md..."
+          
+          # Get current date
+          CURRENT_DATE=$(date +%Y-%m-%d)
+          
+          # Create new changelog entry
+          NEW_ENTRY="## [Unreleased] - $CURRENT_DATE"
+          
+          # Add new commands section if any
+          if [ -n "${{ steps.extract-info.outputs.new_commands }}" ]; then
+            NEW_COMMANDS="${{ steps.extract-info.outputs.new_commands }}"
+            NEW_ENTRY="$NEW_ENTRY"$'\n'"### Added"$'\n'"$NEW_COMMANDS"
+          fi
+          
+          # Add updated commands section if any
+          if [ -n "${{ steps.extract-info.outputs.updated_commands }}" ]; then
+            UPDATED_COMMANDS="${{ steps.extract-info.outputs.updated_commands }}"
+            if [ -z "${{ steps.extract-info.outputs.new_commands }}" ]; then
+              NEW_ENTRY="$NEW_ENTRY"$'\n'"### Changed"
+            else
+              NEW_ENTRY="$NEW_ENTRY"$'\n'"### Changed"
+            fi
+            NEW_ENTRY="$NEW_ENTRY"$'\n'"$UPDATED_COMMANDS"
+          fi
+          
+          # Add command count update
+          NEW_ENTRY="$NEW_ENTRY"$'\n'"### Updated"$'\n'"- Total commands now: ${{ steps.extract-info.outputs.total_commands }}"
+          
+          # Create temporary file with new content
+          {
+            echo "# Changelog"
+            echo ""
+            echo "All notable changes to this project will be documented in this file."
+            echo ""
+            echo "$NEW_ENTRY"
+            echo ""
+            
+            # Add existing content (skip the header)
+            tail -n +5 CHANGELOG.md
+          } > CHANGELOG.tmp
+          
+          # Replace original file
+          mv CHANGELOG.tmp CHANGELOG.md
+          
+          echo "✅ CHANGELOG.md updated successfully"
+      
+      - name: Commit changelog updates
+        if: steps.detect-changes.outputs.has_changes == 'true'
+        run: |
+          # Check if there are changes to commit
+          if git diff --quiet CHANGELOG.md; then
+            echo "ℹ️ No changes to CHANGELOG.md"
+            exit 0
+          fi
+          
+          echo "📝 Committing changelog updates..."
+          git add CHANGELOG.md
+          
+          # Create commit message
+          NEW_COUNT=$(echo "${{ steps.extract-info.outputs.new_commands }}" | grep -c "^- " || echo "0")
+          UPDATED_COUNT=$(echo "${{ steps.extract-info.outputs.updated_commands }}" | grep -c "^- " || echo "0")
+          
+          COMMIT_MSG="docs: update changelog"
+          if [ "$NEW_COUNT" -gt 0 ]; then
+            COMMIT_MSG="$COMMIT_MSG - add $NEW_COUNT new command(s)"
+          fi
+          if [ "$UPDATED_COUNT" -gt 0 ]; then
+            COMMIT_MSG="$COMMIT_MSG - update $UPDATED_COUNT command(s)"
+          fi
+          
+          git commit -m "$COMMIT_MSG"$'\n\n'"Auto-generated changelog update for command changes."$'\n'"Total commands: ${{ steps.extract-info.outputs.total_commands }}"$'\n\n'"🤖 Generated by GitHub Actions"
+          
+          git push origin main
+          
+          echo "✅ Changelog committed and pushed successfully"
+      
+      - name: Create summary comment
+        if: steps.detect-changes.outputs.has_changes == 'true' && github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const newCommands = `${{ steps.extract-info.outputs.new_commands }}`.trim();
+            const updatedCommands = `${{ steps.extract-info.outputs.updated_commands }}`.trim();
+            const totalCommands = `${{ steps.extract-info.outputs.total_commands }}`;
+            
+            let summary = '## 📝 Changelog Updated\n\n';
+            
+            if (newCommands) {
+              const count = newCommands.split('\n').filter(line => line.trim().startsWith('- ')).length;
+              summary += `### ✨ Added ${count} New Command(s)\n${newCommands}\n\n`;
+            }
+            
+            if (updatedCommands) {
+              const count = updatedCommands.split('\n').filter(line => line.trim().startsWith('- ')).length;
+              summary += `### 🔄 Updated ${count} Command(s)\n${updatedCommands}\n\n`;
+            }
+            
+            summary += `**Total Commands:** ${totalCommands}\n\n`;
+            summary += '🤖 *Changelog automatically updated by GitHub Actions*';
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: summary
+            });

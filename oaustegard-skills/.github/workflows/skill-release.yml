@@ -1,0 +1,39 @@
+name: Release Skill
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '*/SKILL.md'
+  workflow_dispatch:
+    inputs:
+      skill_name:
+        description: 'Skill folder name to release'
+        required: true
+        type: string
+      version:
+        description: 'Version number (will use metadata.version from SKILL.md if not specified)'
+        required: false
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  release-skill:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0  # Full history for changelog generation
+
+      - name: Release Skills
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_EVENT_NAME: ${{ github.event_name }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          WORKFLOW_DISPATCH_SKILL: ${{ inputs.skill_name }}
+          WORKFLOW_DISPATCH_VERSION: ${{ inputs.version }}
+        run: .github/scripts/release-skill.sh
