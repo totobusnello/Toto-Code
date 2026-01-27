@@ -1,0 +1,10 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "type": "command",
+        "command": "echo '🚀 Autonomous Dev Mode Ready - Use /autonomous-dev to start'"
+      }
+    ]
+  }
+}
