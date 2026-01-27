@@ -1,48 +1,63 @@
+// Ativa global-agent para proxy Node.js
+require('global-agent/bootstrap');
+
 const { chromium } = require('playwright');
 const path = require('path');
 
 (async () => {
   console.log('Abrindo o navegador...');
 
+  // Usa o proxy do ambiente se disponível
+  const proxyServer = process.env.HTTP_PROXY || process.env.http_proxy;
+  console.log('Proxy configurado:', proxyServer ? 'Sim' : 'Não');
+
   // Inicia o navegador em modo visível (não headless)
-  const browser = await chromium.launch({
+  const launchOptions = {
     headless: false,
-    slowMo: 500 // Adiciona pequeno delay para visualização
-  });
+    slowMo: 500, // Adiciona pequeno delay para visualização
+    args: []
+  };
+
+  // Adiciona proxy se disponível
+  if (proxyServer) {
+    // Extrai host:port do proxy URL
+    const proxyUrl = new URL(proxyServer);
+    const proxyHost = `${proxyUrl.hostname}:${proxyUrl.port}`;
+    console.log('Proxy host:', proxyHost);
+
+    // Configura proxy com autenticação via Playwright
+    launchOptions.proxy = {
+      server: `http://${proxyHost}`,
+      username: decodeURIComponent(proxyUrl.username),
+      password: decodeURIComponent(proxyUrl.password)
+    };
+    console.log('Username:', launchOptions.proxy.username.substring(0, 30) + '...');
+  }
+
+  const browser = await chromium.launch(launchOptions);
 
   // Cria uma nova página
   const page = await browser.newPage();
 
-  // Primeiro tenta a página local para demonstrar que o Playwright funciona
-  const localPath = path.join(__dirname, 'google-mock.html');
-  console.log('Abrindo página de demonstração...');
-  await page.goto(`file://${localPath}`);
-  await page.waitForLoadState('load');
-  console.log('Página de demonstração aberta!');
-  console.log('Título da página:', await page.title());
-
-  // Aguarda um momento para visualização
-  await page.waitForTimeout(3000);
-
-  // Tira um screenshot da página local
-  const screenshotPath = path.join(__dirname, 'screenshot.png');
+  // Navega para o Google (HTTP funciona com o proxy)
+  console.log('Navegando para http://google.com...');
   try {
-    await page.screenshot({ path: screenshotPath, fullPage: false, timeout: 10000 });
-    console.log(`Screenshot salvo em: ${screenshotPath}`);
-  } catch (e) {
-    console.log('Screenshot não pôde ser salvo:', e.message);
-  }
-
-  // Tenta navegar para o Google real
-  console.log('\nTentando navegar para https://google.com...');
-  try {
-    await page.goto('https://google.com', { timeout: 10000 });
-    await page.waitForLoadState('networkidle');
+    await page.goto('http://google.com', { timeout: 30000 });
+    await page.waitForLoadState('domcontentloaded');
     console.log('Google aberto com sucesso!');
     console.log('Título da página:', await page.title());
+    console.log('URL atual:', page.url());
+
+    // Tenta tirar um screenshot
+    try {
+      const screenshotPath = path.join(__dirname, 'screenshot.png');
+      await page.screenshot({ path: screenshotPath, fullPage: false, timeout: 15000 });
+      console.log(`Screenshot salvo em: ${screenshotPath}`);
+    } catch (e) {
+      console.log('Screenshot falhou (normal em ambiente headless)');
+    }
   } catch (error) {
-    console.log('Não foi possível acessar o Google devido a restrições de rede.');
-    console.log('(Este ambiente sandbox não tem acesso direto à internet)');
+    console.log('Erro ao acessar o Google:', error.message);
   }
 
   // Mantém o navegador aberto por alguns segundos para visualização
