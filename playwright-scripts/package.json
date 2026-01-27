@@ -1,0 +1,12 @@
+{
+  "name": "playwright-scripts",
+  "version": "1.0.0",
+  "description": "Scripts de automação com Playwright",
+  "main": "open-google.js",
+  "scripts": {
+    "google": "node open-google.js"
+  },
+  "dependencies": {
+    "playwright": "1.53.0"
+  }
+}
