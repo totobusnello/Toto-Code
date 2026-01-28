@@ -1,6 +1,6 @@
 # Claude Code Extensions - Complete Index
 
-> **112 Skills** | **151 Agents** | Organized by Category
+> **121 Skills** | **151 Agents** | Organized by Category
 > Last updated: 2025-01-28
 
 ---
@@ -22,8 +22,10 @@
 | AI Agents | 4 | - |
 | Analytics | 4 | - |
 | Business/CPO | 4 | - |
-| MCP Tools | 3 | - |
+| MCP Tools | 6 | - |
 | Workflow Management | 9 | - |
+| **Productivity** | 4 | - |
+| **Browser Automation** | 2 | - |
 | Language Specialists | - | 27 |
 | Developer Experience | - | 14 |
 | Specialized Domains | - | 13 |
@@ -180,12 +182,29 @@
 | ab-test-setup | A/B testing setup |
 | analytics-tracking | Analytics implementation |
 
-### MCP Tools (3)
+### MCP Tools (6)
 | Skill | Description |
 |-------|-------------|
 | creating-mcp-servers | MCP server creation |
 | orchestrating-agents | Agent orchestration |
 | creating-skill | Skill creation guide |
+| mcp-builder | Build custom MCP servers |
+| skill-creator | Create your own skills |
+| artifacts-builder | Generate HTML/React artifacts |
+
+### Productivity (4)
+| Skill | Description |
+|-------|-------------|
+| file-organizer | Automatic file organization |
+| meeting-insights-analyzer | Extract insights from meetings |
+| brainstorming | Structured brainstorming techniques |
+| kaizen | Continuous improvement methodology |
+
+### Browser Automation (2)
+| Skill | Description |
+|-------|-------------|
+| browser-automation | Automate browser tasks |
+| playwright-skill | E2E testing with Playwright |
 
 ### Workflow Management (9)
 | Skill | Description |
