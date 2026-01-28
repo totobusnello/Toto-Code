@@ -1,0 +1,43 @@
+{
+  "version": "1.0.0",
+  "lastUpdated": "2025-01-28",
+
+  "userProfile": {
+    "name": "Toto",
+    "username": "totobusnello",
+    "role": "CPO (Chief Product Officer)",
+    "expertise": ["Python", "React", "Product Management"],
+    "workContext": "Building and managing products",
+    "communicationStyle": "direct, practical"
+  },
+
+  "preferences": {
+    "packageManager": "npm",
+    "deployment": {
+      "primary": "Vercel",
+      "alternatives": ["Railway", "Heroku"]
+    },
+    "database": {
+      "primary": "PostgreSQL",
+      "orm": "Prisma"
+    },
+    "codeStyle": {
+      "principle": "simplicity over cleverness",
+      "preferPatterns": ["early returns", "composition"],
+      "avoidPatterns": ["deep nesting", "premature abstraction"]
+    }
+  },
+
+  "beliefs": [
+    "Simple solutions beat clever ones",
+    "Ship fast, iterate faster",
+    "User experience is everything"
+  ],
+
+  "projectContext": {
+    "activeProjects": ["Toto-Code"],
+    "techStack": {
+      "Toto-Code": "Claude Code skills and agents setup"
+    }
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '=== CORE MEMORY ===' && cat .claude/memory/core-memory.json 2>/dev/null || echo 'No core memory found'"
+          }
+        ]
+      }
+    ]
+  }
+}
