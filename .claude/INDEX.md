@@ -1,6 +1,6 @@
 # Claude Code Extensions - Complete Index
 
-> **78 Skills** | **151 Agents** | Organized by Category
+> **112 Skills** | **151 Agents** | Organized by Category
 > Last updated: 2025-01-28
 
 ---
@@ -9,9 +9,9 @@
 
 | Category | Skills | Agents |
 |----------|--------|--------|
-| Engineering | 18 | 11 |
-| Frontend | 7 | - |
-| Backend | 7 | - |
+| Engineering | 20 | 11 |
+| Frontend | 9 | - |
+| Backend | 8 | - |
 | DevOps | 6 | 15 |
 | Data/AI | 9 | 13 |
 | Security | 4 | 15 |
@@ -19,6 +19,11 @@
 | Product | 5 | 1 |
 | Marketing | 5 | 2 |
 | C-Level | 2 | 2 |
+| AI Agents | 4 | - |
+| Analytics | 4 | - |
+| Business/CPO | 4 | - |
+| MCP Tools | 3 | - |
+| Workflow Management | 9 | - |
 | Language Specialists | - | 27 |
 | Developer Experience | - | 14 |
 | Specialized Domains | - | 13 |
@@ -151,6 +156,50 @@
 | skill-loader | Load skills from GitHub |
 | worktree-scaffold | Git worktree automation |
 
+### AI Agents (4)
+| Skill | Description |
+|-------|-------------|
+| agents-crewai | CrewAI multi-agent framework |
+| agents-langchain | LangChain agent development |
+| ai-agents-architect | AI agent architecture patterns |
+| autonomous-agent-patterns | Autonomous agent design patterns |
+
+### Analytics (4)
+| Skill | Description |
+|-------|-------------|
+| charting-vega-lite | Data visualization with Vega-Lite |
+| exploring-data | Data exploration techniques |
+| google-analytics | Google Analytics integration |
+| analytics-tracking | Analytics implementation |
+
+### Business/CPO (4)
+| Skill | Description |
+|-------|-------------|
+| agile-product-owner | Agile product ownership |
+| ai-product | AI product development |
+| ab-test-setup | A/B testing setup |
+| analytics-tracking | Analytics implementation |
+
+### MCP Tools (3)
+| Skill | Description |
+|-------|-------------|
+| creating-mcp-servers | MCP server creation |
+| orchestrating-agents | Agent orchestration |
+| creating-skill | Skill creation guide |
+
+### Workflow Management (9)
+| Skill | Description |
+|-------|-------------|
+| scope-decomposer | Scope decomposition |
+| epic-coordinator | Epic coordination |
+| story-coordinator | Story coordination |
+| task-coordinator | Task coordination |
+| story-executor | Story execution |
+| story-quality-gate | Quality gates |
+| github-workflow-automation | GitHub Actions automation |
+| n8n | n8n workflow automation |
+| planning-with-files | File-based planning |
+
 ---
 
 ## Agents by Category
@@ -282,6 +331,9 @@ Skills and agents consolidated from:
 - jeffallan/claude-skills
 - VoltAgent/awesome-claude-code-subagents
 - anthropics/skills
+- davila7/templates (ai-research, analytics, business-marketing, workflow-automation)
+- levnikolaevich/skills (workflow management system)
+- oaustegard/skills (MCP tools, analytics)
 
 ---
 
