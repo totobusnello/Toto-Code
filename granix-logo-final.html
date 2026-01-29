@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GRANIX - Logo Final</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&family=Inter:wght@300;400&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -34,7 +34,7 @@
 
         .section-title {
             text-align: center;
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             margin: 50px 0 25px;
             color: #7C4DFF;
             font-weight: 600;
@@ -61,10 +61,6 @@
             box-shadow: 0 10px 40px rgba(0,200,83,0.15);
         }
 
-        .logo-card.selected {
-            border: 2px solid #00C853;
-        }
-
         .card-label {
             font-size: 0.8rem;
             color: #7C4DFF;
@@ -87,72 +83,41 @@
             background: #1A237E;
         }
 
-        .logo-display.gradient {
-            background: linear-gradient(135deg, #00C853 0%, #1A237E 100%);
-        }
-
-        /* Logo container - icon + text closer together */
+        /* Logo lockup - icon very close to text */
         .logo-lockup {
             display: flex;
-            flex-direction: column;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
         }
 
-        .logo-icon {
-            width: 80px;
-            height: 80px;
+        .logo-icon-small {
+            width: 44px;
+            height: 44px;
         }
 
         .wordmark {
             font-family: 'Poppins', sans-serif;
             font-weight: 800;
-            font-size: 32px;
+            font-size: 36px;
             letter-spacing: -1px;
             line-height: 1;
         }
 
         .tagline {
             font-family: 'Inter', sans-serif;
-            font-size: 10px;
-            font-weight: 400;
-            letter-spacing: 2px;
+            font-size: 11px;
+            font-weight: 300;
+            letter-spacing: 1.5px;
             text-transform: uppercase;
-            margin-top: 6px;
+            margin-top: 12px;
             white-space: nowrap;
-        }
-
-        /* Horizontal layouts */
-        .logo-horizontal {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .logo-horizontal .logo-icon {
-            width: 48px;
-            height: 48px;
-        }
-
-        .logo-horizontal .wordmark {
-            font-size: 28px;
-        }
-
-        .horizontal-stack {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-        }
-
-        .horizontal-stack .tagline {
-            margin-top: 2px;
         }
 
         /* App icons row */
         .app-icons-row {
             display: flex;
             justify-content: center;
-            gap: 20px;
+            gap: 25px;
             flex-wrap: wrap;
             margin-top: 30px;
         }
@@ -187,113 +152,177 @@
             color: #555;
             font-size: 0.85rem;
         }
+
+        .big-preview {
+            display: flex;
+            justify-content: center;
+            gap: 60px;
+            margin: 40px 0;
+            flex-wrap: wrap;
+        }
+
+        .big-preview-card {
+            background: white;
+            padding: 50px 60px;
+            border-radius: 24px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+
+        .big-preview-card.dark {
+            background: #1A237E;
+        }
     </style>
 </head>
 <body>
 
     <div class="header">
         <h1>GRANIX - Logo Final</h1>
-        <p style="color: #888; font-size: 0.9rem;">Compact Elegant (F) - Refinado</p>
+        <p style="color: #888; font-size: 0.9rem;">Um círculo verde + plantinha + nome junto</p>
     </div>
 
-    <!-- Main Logo Variations -->
-    <div class="logo-grid">
-
-        <!-- Vertical - Light -->
-        <div class="logo-card selected">
-            <div class="card-label">VERTICAL - LIGHT</div>
-            <div class="logo-display">
+    <!-- Big Preview -->
+    <div class="big-preview">
+        <!-- Light version -->
+        <div class="big-preview-card">
+            <div style="display: flex; flex-direction: column; align-items: center;">
                 <div class="logo-lockup">
-                    <svg class="logo-icon" viewBox="0 0 100 100">
-                        <circle cx="50" cy="50" r="38" fill="none" stroke="#1A237E" stroke-width="1" opacity="0.15"/>
-                        <circle cx="50" cy="50" r="31" fill="none" stroke="#1A237E" stroke-width="1" opacity="0.25"/>
-                        <circle cx="50" cy="50" r="24" fill="none" stroke="#00C853" stroke-width="1.5" opacity="0.5"/>
-                        <circle cx="50" cy="50" r="17" fill="none" stroke="#00C853" stroke-width="2" opacity="0.75"/>
-                        <circle cx="50" cy="50" r="10" fill="none" stroke="#00C853" stroke-width="2.5"/>
-                        <ellipse cx="50" cy="53" rx="5" ry="4" fill="#1A237E"/>
-                        <path d="M50 49 L50 38" stroke="#00C853" stroke-width="2.5" stroke-linecap="round"/>
-                        <ellipse cx="46" cy="41" rx="4" ry="2" fill="#00C853" transform="rotate(-35 46 41)"/>
-                        <ellipse cx="54" cy="41" rx="4" ry="2" fill="#00C853" transform="rotate(35 54 41)"/>
+                    <svg class="logo-icon-small" viewBox="0 0 100 100">
+                        <!-- Single green circle -->
+                        <circle cx="50" cy="50" r="42" fill="none" stroke="#00C853" stroke-width="4"/>
+                        <!-- Seed -->
+                        <ellipse cx="50" cy="60" rx="8" ry="6" fill="#1A237E"/>
+                        <!-- Sprout stem -->
+                        <path d="M50 54 L50 30" stroke="#00C853" stroke-width="4" stroke-linecap="round"/>
+                        <!-- Leaves -->
+                        <ellipse cx="42" cy="38" rx="8" ry="4" fill="#00C853" transform="rotate(-40 42 38)"/>
+                        <ellipse cx="58" cy="38" rx="8" ry="4" fill="#00C853" transform="rotate(40 58 38)"/>
                     </svg>
                     <div class="wordmark">
                         <span style="color: #1A237E;">GRAN</span><span style="color: #00C853;">IX</span>
                     </div>
-                    <div class="tagline" style="color: #888;">O futuro começa com um grão</div>
                 </div>
+                <div class="tagline" style="color: #888;">O futuro começa com um grão</div>
             </div>
         </div>
 
-        <!-- Vertical - Dark -->
-        <div class="logo-card">
-            <div class="card-label">VERTICAL - DARK</div>
-            <div class="logo-display dark">
+        <!-- Dark version -->
+        <div class="big-preview-card dark">
+            <div style="display: flex; flex-direction: column; align-items: center;">
                 <div class="logo-lockup">
-                    <svg class="logo-icon" viewBox="0 0 100 100">
-                        <circle cx="50" cy="50" r="38" fill="none" stroke="#00C853" stroke-width="1" opacity="0.2"/>
-                        <circle cx="50" cy="50" r="31" fill="none" stroke="#00C853" stroke-width="1" opacity="0.35"/>
-                        <circle cx="50" cy="50" r="24" fill="none" stroke="#00C853" stroke-width="1.5" opacity="0.55"/>
-                        <circle cx="50" cy="50" r="17" fill="none" stroke="#00C853" stroke-width="2" opacity="0.8"/>
-                        <circle cx="50" cy="50" r="10" fill="none" stroke="#00C853" stroke-width="2.5"/>
-                        <ellipse cx="50" cy="53" rx="5" ry="4" fill="#00C853"/>
-                        <path d="M50 49 L50 38" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
-                        <ellipse cx="46" cy="41" rx="4" ry="2" fill="white" transform="rotate(-35 46 41)"/>
-                        <ellipse cx="54" cy="41" rx="4" ry="2" fill="white" transform="rotate(35 54 41)"/>
+                    <svg class="logo-icon-small" viewBox="0 0 100 100">
+                        <!-- Single green circle -->
+                        <circle cx="50" cy="50" r="42" fill="none" stroke="#00C853" stroke-width="4"/>
+                        <!-- Seed -->
+                        <ellipse cx="50" cy="60" rx="8" ry="6" fill="#00C853"/>
+                        <!-- Sprout stem -->
+                        <path d="M50 54 L50 30" stroke="white" stroke-width="4" stroke-linecap="round"/>
+                        <!-- Leaves -->
+                        <ellipse cx="42" cy="38" rx="8" ry="4" fill="white" transform="rotate(-40 42 38)"/>
+                        <ellipse cx="58" cy="38" rx="8" ry="4" fill="white" transform="rotate(40 58 38)"/>
                     </svg>
                     <div class="wordmark">
                         <span style="color: white;">GRAN</span><span style="color: #00C853;">IX</span>
                     </div>
-                    <div class="tagline" style="color: rgba(255,255,255,0.6);">O futuro começa com um grão</div>
                 </div>
+                <div class="tagline" style="color: rgba(255,255,255,0.6);">O futuro começa com um grão</div>
             </div>
         </div>
+    </div>
 
-        <!-- Horizontal - Light -->
+    <!-- Variations Grid -->
+    <div class="logo-grid">
+
+        <!-- Compact - Very tight -->
         <div class="logo-card">
-            <div class="card-label">HORIZONTAL - LIGHT</div>
+            <div class="card-label">COMPACTO - JUNTO</div>
             <div class="logo-display">
-                <div class="logo-horizontal">
-                    <svg class="logo-icon" viewBox="0 0 100 100">
-                        <circle cx="50" cy="50" r="38" fill="none" stroke="#1A237E" stroke-width="1" opacity="0.15"/>
-                        <circle cx="50" cy="50" r="31" fill="none" stroke="#1A237E" stroke-width="1" opacity="0.25"/>
-                        <circle cx="50" cy="50" r="24" fill="none" stroke="#00C853" stroke-width="1.5" opacity="0.5"/>
-                        <circle cx="50" cy="50" r="17" fill="none" stroke="#00C853" stroke-width="2" opacity="0.75"/>
-                        <circle cx="50" cy="50" r="10" fill="none" stroke="#00C853" stroke-width="2.5"/>
-                        <ellipse cx="50" cy="53" rx="5" ry="4" fill="#1A237E"/>
-                        <path d="M50 49 L50 38" stroke="#00C853" stroke-width="2.5" stroke-linecap="round"/>
-                        <ellipse cx="46" cy="41" rx="4" ry="2" fill="#00C853" transform="rotate(-35 46 41)"/>
-                        <ellipse cx="54" cy="41" rx="4" ry="2" fill="#00C853" transform="rotate(35 54 41)"/>
-                    </svg>
-                    <div class="horizontal-stack">
-                        <div class="wordmark">
+                <div style="display: flex; flex-direction: column; align-items: center;">
+                    <div style="display: flex; align-items: center; gap: 6px;">
+                        <svg width="36" height="36" viewBox="0 0 100 100">
+                            <circle cx="50" cy="50" r="42" fill="none" stroke="#00C853" stroke-width="5"/>
+                            <ellipse cx="50" cy="60" rx="8" ry="6" fill="#1A237E"/>
+                            <path d="M50 54 L50 30" stroke="#00C853" stroke-width="5" stroke-linecap="round"/>
+                            <ellipse cx="42" cy="38" rx="8" ry="4" fill="#00C853" transform="rotate(-40 42 38)"/>
+                            <ellipse cx="58" cy="38" rx="8" ry="4" fill="#00C853" transform="rotate(40 58 38)"/>
+                        </svg>
+                        <span style="font-family: Poppins; font-weight: 800; font-size: 32px; letter-spacing: -1px;">
                             <span style="color: #1A237E;">GRAN</span><span style="color: #00C853;">IX</span>
-                        </div>
-                        <div class="tagline" style="color: #888;">O futuro começa com um grão</div>
+                        </span>
+                    </div>
+                    <div style="font-family: Inter; font-size: 10px; font-weight: 300; letter-spacing: 1.5px; color: #888; margin-top: 8px; text-transform: uppercase;">
+                        O futuro começa com um grão
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Horizontal - Dark -->
+        <!-- Minimal circle -->
         <div class="logo-card">
-            <div class="card-label">HORIZONTAL - DARK</div>
+            <div class="card-label">CÍRCULO FINO</div>
+            <div class="logo-display">
+                <div style="display: flex; flex-direction: column; align-items: center;">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <svg width="40" height="40" viewBox="0 0 100 100">
+                            <circle cx="50" cy="50" r="44" fill="none" stroke="#00C853" stroke-width="3"/>
+                            <ellipse cx="50" cy="62" rx="7" ry="5" fill="#1A237E"/>
+                            <path d="M50 57 L50 28" stroke="#00C853" stroke-width="3.5" stroke-linecap="round"/>
+                            <ellipse cx="41" cy="36" rx="7" ry="3.5" fill="#00C853" transform="rotate(-40 41 36)"/>
+                            <ellipse cx="59" cy="36" rx="7" ry="3.5" fill="#00C853" transform="rotate(40 59 36)"/>
+                        </svg>
+                        <span style="font-family: Poppins; font-weight: 800; font-size: 34px; letter-spacing: -1px;">
+                            <span style="color: #1A237E;">GRAN</span><span style="color: #00C853;">IX</span>
+                        </span>
+                    </div>
+                    <div style="font-family: Inter; font-size: 10px; font-weight: 300; letter-spacing: 1.5px; color: #888; margin-top: 10px; text-transform: uppercase;">
+                        O futuro começa com um grão
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filled circle -->
+        <div class="logo-card">
+            <div class="card-label">CÍRCULO PREENCHIDO</div>
+            <div class="logo-display">
+                <div style="display: flex; flex-direction: column; align-items: center;">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <svg width="40" height="40" viewBox="0 0 100 100">
+                            <circle cx="50" cy="50" r="44" fill="#00C853"/>
+                            <ellipse cx="50" cy="62" rx="7" ry="5" fill="#1A237E"/>
+                            <path d="M50 57 L50 28" stroke="white" stroke-width="4" stroke-linecap="round"/>
+                            <ellipse cx="41" cy="36" rx="7" ry="3.5" fill="white" transform="rotate(-40 41 36)"/>
+                            <ellipse cx="59" cy="36" rx="7" ry="3.5" fill="white" transform="rotate(40 59 36)"/>
+                        </svg>
+                        <span style="font-family: Poppins; font-weight: 800; font-size: 34px; letter-spacing: -1px;">
+                            <span style="color: #1A237E;">GRAN</span><span style="color: #00C853;">IX</span>
+                        </span>
+                    </div>
+                    <div style="font-family: Inter; font-size: 10px; font-weight: 300; letter-spacing: 1.5px; color: #888; margin-top: 10px; text-transform: uppercase;">
+                        O futuro começa com um grão
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dark version -->
+        <div class="logo-card">
+            <div class="card-label">DARK MODE</div>
             <div class="logo-display dark">
-                <div class="logo-horizontal">
-                    <svg class="logo-icon" viewBox="0 0 100 100">
-                        <circle cx="50" cy="50" r="38" fill="none" stroke="#00C853" stroke-width="1" opacity="0.2"/>
-                        <circle cx="50" cy="50" r="31" fill="none" stroke="#00C853" stroke-width="1" opacity="0.35"/>
-                        <circle cx="50" cy="50" r="24" fill="none" stroke="#00C853" stroke-width="1.5" opacity="0.55"/>
-                        <circle cx="50" cy="50" r="17" fill="none" stroke="#00C853" stroke-width="2" opacity="0.8"/>
-                        <circle cx="50" cy="50" r="10" fill="none" stroke="#00C853" stroke-width="2.5"/>
-                        <ellipse cx="50" cy="53" rx="5" ry="4" fill="#00C853"/>
-                        <path d="M50 49 L50 38" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
-                        <ellipse cx="46" cy="41" rx="4" ry="2" fill="white" transform="rotate(-35 46 41)"/>
-                        <ellipse cx="54" cy="41" rx="4" ry="2" fill="white" transform="rotate(35 54 41)"/>
-                    </svg>
-                    <div class="horizontal-stack">
-                        <div class="wordmark">
+                <div style="display: flex; flex-direction: column; align-items: center;">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <svg width="40" height="40" viewBox="0 0 100 100">
+                            <circle cx="50" cy="50" r="44" fill="none" stroke="#00C853" stroke-width="3"/>
+                            <ellipse cx="50" cy="62" rx="7" ry="5" fill="#00C853"/>
+                            <path d="M50 57 L50 28" stroke="white" stroke-width="3.5" stroke-linecap="round"/>
+                            <ellipse cx="41" cy="36" rx="7" ry="3.5" fill="white" transform="rotate(-40 41 36)"/>
+                            <ellipse cx="59" cy="36" rx="7" ry="3.5" fill="white" transform="rotate(40 59 36)"/>
+                        </svg>
+                        <span style="font-family: Poppins; font-weight: 800; font-size: 34px; letter-spacing: -1px;">
                             <span style="color: white;">GRAN</span><span style="color: #00C853;">IX</span>
-                        </div>
-                        <div class="tagline" style="color: rgba(255,255,255,0.6);">O futuro começa com um grão</div>
+                        </span>
+                    </div>
+                    <div style="font-family: Inter; font-size: 10px; font-weight: 300; letter-spacing: 1.5px; color: rgba(255,255,255,0.6); margin-top: 10px; text-transform: uppercase;">
+                        O futuro começa com um grão
                     </div>
                 </div>
             </div>
@@ -307,14 +336,11 @@
         <div class="app-icon">
             <div class="app-icon-box" style="background: white; box-shadow: 0 4px 20px rgba(0,0,0,0.1);">
                 <svg viewBox="0 0 100 100">
-                    <circle cx="50" cy="50" r="36" fill="none" stroke="#1A237E" stroke-width="1.5" opacity="0.2"/>
-                    <circle cx="50" cy="50" r="28" fill="none" stroke="#00C853" stroke-width="2" opacity="0.5"/>
-                    <circle cx="50" cy="50" r="20" fill="none" stroke="#00C853" stroke-width="2.5" opacity="0.8"/>
-                    <circle cx="50" cy="50" r="12" fill="none" stroke="#00C853" stroke-width="3"/>
-                    <ellipse cx="50" cy="54" rx="6" ry="5" fill="#1A237E"/>
-                    <path d="M50 49 L50 35" stroke="#00C853" stroke-width="3" stroke-linecap="round"/>
-                    <ellipse cx="45" cy="39" rx="5" ry="2.5" fill="#00C853" transform="rotate(-35 45 39)"/>
-                    <ellipse cx="55" cy="39" rx="5" ry="2.5" fill="#00C853" transform="rotate(35 55 39)"/>
+                    <circle cx="50" cy="50" r="42" fill="none" stroke="#00C853" stroke-width="4"/>
+                    <ellipse cx="50" cy="60" rx="8" ry="6" fill="#1A237E"/>
+                    <path d="M50 54 L50 30" stroke="#00C853" stroke-width="4" stroke-linecap="round"/>
+                    <ellipse cx="42" cy="38" rx="8" ry="4" fill="#00C853" transform="rotate(-40 42 38)"/>
+                    <ellipse cx="58" cy="38" rx="8" ry="4" fill="#00C853" transform="rotate(40 58 38)"/>
                 </svg>
             </div>
             <div class="app-icon-label">Light</div>
@@ -322,14 +348,11 @@
         <div class="app-icon">
             <div class="app-icon-box" style="background: #1A237E;">
                 <svg viewBox="0 0 100 100">
-                    <circle cx="50" cy="50" r="36" fill="none" stroke="#00C853" stroke-width="1.5" opacity="0.25"/>
-                    <circle cx="50" cy="50" r="28" fill="none" stroke="#00C853" stroke-width="2" opacity="0.5"/>
-                    <circle cx="50" cy="50" r="20" fill="none" stroke="#00C853" stroke-width="2.5" opacity="0.8"/>
-                    <circle cx="50" cy="50" r="12" fill="none" stroke="#00C853" stroke-width="3"/>
-                    <ellipse cx="50" cy="54" rx="6" ry="5" fill="#00C853"/>
-                    <path d="M50 49 L50 35" stroke="white" stroke-width="3" stroke-linecap="round"/>
-                    <ellipse cx="45" cy="39" rx="5" ry="2.5" fill="white" transform="rotate(-35 45 39)"/>
-                    <ellipse cx="55" cy="39" rx="5" ry="2.5" fill="white" transform="rotate(35 55 39)"/>
+                    <circle cx="50" cy="50" r="42" fill="none" stroke="#00C853" stroke-width="4"/>
+                    <ellipse cx="50" cy="60" rx="8" ry="6" fill="#00C853"/>
+                    <path d="M50 54 L50 30" stroke="white" stroke-width="4" stroke-linecap="round"/>
+                    <ellipse cx="42" cy="38" rx="8" ry="4" fill="white" transform="rotate(-40 42 38)"/>
+                    <ellipse cx="58" cy="38" rx="8" ry="4" fill="white" transform="rotate(40 58 38)"/>
                 </svg>
             </div>
             <div class="app-icon-label">Dark</div>
@@ -337,69 +360,59 @@
         <div class="app-icon">
             <div class="app-icon-box" style="background: #00C853;">
                 <svg viewBox="0 0 100 100">
-                    <circle cx="50" cy="50" r="36" fill="none" stroke="white" stroke-width="1.5" opacity="0.3"/>
-                    <circle cx="50" cy="50" r="28" fill="none" stroke="white" stroke-width="2" opacity="0.5"/>
-                    <circle cx="50" cy="50" r="20" fill="none" stroke="white" stroke-width="2.5" opacity="0.7"/>
-                    <circle cx="50" cy="50" r="12" fill="none" stroke="white" stroke-width="3"/>
-                    <ellipse cx="50" cy="54" rx="6" ry="5" fill="white"/>
-                    <path d="M50 49 L50 35" stroke="#1A237E" stroke-width="3" stroke-linecap="round"/>
-                    <ellipse cx="45" cy="39" rx="5" ry="2.5" fill="#1A237E" transform="rotate(-35 45 39)"/>
-                    <ellipse cx="55" cy="39" rx="5" ry="2.5" fill="#1A237E" transform="rotate(35 55 39)"/>
+                    <circle cx="50" cy="50" r="42" fill="none" stroke="white" stroke-width="4"/>
+                    <ellipse cx="50" cy="60" rx="8" ry="6" fill="white"/>
+                    <path d="M50 54 L50 30" stroke="white" stroke-width="4" stroke-linecap="round"/>
+                    <ellipse cx="42" cy="38" rx="8" ry="4" fill="white" transform="rotate(-40 42 38)"/>
+                    <ellipse cx="58" cy="38" rx="8" ry="4" fill="white" transform="rotate(40 58 38)"/>
                 </svg>
             </div>
             <div class="app-icon-label">Green</div>
         </div>
         <div class="app-icon">
-            <div class="app-icon-box" style="background: linear-gradient(135deg, #00C853 0%, #1A237E 100%);">
+            <div class="app-icon-box" style="background: linear-gradient(135deg, #00C853, #1A237E);">
                 <svg viewBox="0 0 100 100">
-                    <circle cx="50" cy="50" r="36" fill="none" stroke="white" stroke-width="1.5" opacity="0.25"/>
-                    <circle cx="50" cy="50" r="28" fill="none" stroke="white" stroke-width="2" opacity="0.45"/>
-                    <circle cx="50" cy="50" r="20" fill="none" stroke="white" stroke-width="2.5" opacity="0.7"/>
-                    <circle cx="50" cy="50" r="12" fill="none" stroke="white" stroke-width="3"/>
-                    <ellipse cx="50" cy="54" rx="6" ry="5" fill="white"/>
-                    <path d="M50 49 L50 35" stroke="white" stroke-width="3" stroke-linecap="round"/>
-                    <ellipse cx="45" cy="39" rx="5" ry="2.5" fill="white" transform="rotate(-35 45 39)"/>
-                    <ellipse cx="55" cy="39" rx="5" ry="2.5" fill="white" transform="rotate(35 55 39)"/>
+                    <circle cx="50" cy="50" r="42" fill="none" stroke="white" stroke-width="4"/>
+                    <ellipse cx="50" cy="60" rx="8" ry="6" fill="white"/>
+                    <path d="M50 54 L50 30" stroke="white" stroke-width="4" stroke-linecap="round"/>
+                    <ellipse cx="42" cy="38" rx="8" ry="4" fill="white" transform="rotate(-40 42 38)"/>
+                    <ellipse cx="58" cy="38" rx="8" ry="4" fill="white" transform="rotate(40 58 38)"/>
                 </svg>
             </div>
             <div class="app-icon-label">Gradient</div>
         </div>
     </div>
 
-    <!-- Icon Only (no text) -->
+    <!-- Symbol Only -->
     <h2 class="section-title">Apenas Símbolo</h2>
     <div style="display: flex; justify-content: center; gap: 40px; margin-top: 20px;">
         <div style="background: white; padding: 30px; border-radius: 16px;">
-            <svg width="100" height="100" viewBox="0 0 100 100">
-                <circle cx="50" cy="50" r="38" fill="none" stroke="#1A237E" stroke-width="1" opacity="0.15"/>
-                <circle cx="50" cy="50" r="31" fill="none" stroke="#1A237E" stroke-width="1" opacity="0.25"/>
-                <circle cx="50" cy="50" r="24" fill="none" stroke="#00C853" stroke-width="1.5" opacity="0.5"/>
-                <circle cx="50" cy="50" r="17" fill="none" stroke="#00C853" stroke-width="2" opacity="0.75"/>
-                <circle cx="50" cy="50" r="10" fill="none" stroke="#00C853" stroke-width="2.5"/>
-                <ellipse cx="50" cy="53" rx="5" ry="4" fill="#1A237E"/>
-                <path d="M50 49 L50 38" stroke="#00C853" stroke-width="2.5" stroke-linecap="round"/>
-                <ellipse cx="46" cy="41" rx="4" ry="2" fill="#00C853" transform="rotate(-35 46 41)"/>
-                <ellipse cx="54" cy="41" rx="4" ry="2" fill="#00C853" transform="rotate(35 54 41)"/>
+            <svg width="80" height="80" viewBox="0 0 100 100">
+                <circle cx="50" cy="50" r="42" fill="none" stroke="#00C853" stroke-width="4"/>
+                <ellipse cx="50" cy="60" rx="8" ry="6" fill="#1A237E"/>
+                <path d="M50 54 L50 30" stroke="#00C853" stroke-width="4" stroke-linecap="round"/>
+                <ellipse cx="42" cy="38" rx="8" ry="4" fill="#00C853" transform="rotate(-40 42 38)"/>
+                <ellipse cx="58" cy="38" rx="8" ry="4" fill="#00C853" transform="rotate(40 58 38)"/>
             </svg>
         </div>
         <div style="background: #1A237E; padding: 30px; border-radius: 16px;">
-            <svg width="100" height="100" viewBox="0 0 100 100">
-                <circle cx="50" cy="50" r="38" fill="none" stroke="#00C853" stroke-width="1" opacity="0.2"/>
-                <circle cx="50" cy="50" r="31" fill="none" stroke="#00C853" stroke-width="1" opacity="0.35"/>
-                <circle cx="50" cy="50" r="24" fill="none" stroke="#00C853" stroke-width="1.5" opacity="0.55"/>
-                <circle cx="50" cy="50" r="17" fill="none" stroke="#00C853" stroke-width="2" opacity="0.8"/>
-                <circle cx="50" cy="50" r="10" fill="none" stroke="#00C853" stroke-width="2.5"/>
-                <ellipse cx="50" cy="53" rx="5" ry="4" fill="#00C853"/>
-                <path d="M50 49 L50 38" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
-                <ellipse cx="46" cy="41" rx="4" ry="2" fill="white" transform="rotate(-35 46 41)"/>
-                <ellipse cx="54" cy="41" rx="4" ry="2" fill="white" transform="rotate(35 54 41)"/>
+            <svg width="80" height="80" viewBox="0 0 100 100">
+                <circle cx="50" cy="50" r="42" fill="none" stroke="#00C853" stroke-width="4"/>
+                <ellipse cx="50" cy="60" rx="8" ry="6" fill="#00C853"/>
+                <path d="M50 54 L50 30" stroke="white" stroke-width="4" stroke-linecap="round"/>
+                <ellipse cx="42" cy="38" rx="8" ry="4" fill="white" transform="rotate(-40 42 38)"/>
+                <ellipse cx="58" cy="38" rx="8" ry="4" fill="white" transform="rotate(40 58 38)"/>
             </svg>
         </div>
     </div>
 
     <div class="footer">
-        <p>GRANIX.APP</p>
-        <p style="margin-top: 5px; font-family: Inter; font-weight: 300;">"O futuro começa com um grão"</p>
+        <p style="font-family: Poppins; font-weight: 700; font-size: 1.2rem;">
+            <span style="color: #888;">GRAN</span><span style="color: #00C853;">IX</span>
+        </p>
+        <p style="margin-top: 5px; font-family: Inter; font-weight: 300; font-size: 0.8rem; letter-spacing: 1px; text-transform: uppercase;">
+            O futuro começa com um grão
+        </p>
     </div>
 
 </body>
