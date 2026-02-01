@@ -5,9 +5,15 @@
   "userProfile": {
     "name": "Toto",
     "username": "totobusnello",
-    "role": "CPO (Chief Product Officer)",
-    "expertise": ["Python", "React", "Product Management"],
-    "workContext": "Building and managing products",
+    "roles": [
+      "CEO (Chief Executive Officer)",
+      "CFO (Chief Financial Officer)",
+      "CTO (Chief Technology Officer)",
+      "CPO (Chief Product Officer)",
+      "CMO (Chief Marketing Officer)"
+    ],
+    "expertise": ["Python", "React", "Product Management", "Business Strategy", "Finance", "Technology Leadership", "Marketing"],
+    "workContext": "Full C-suite leadership - running all aspects of the organization",
     "communicationStyle": "direct, practical"
   },
 
