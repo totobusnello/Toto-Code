@@ -2,6 +2,43 @@
 
 > Este arquivo ajuda Claude a identificar o tipo de projeto e sugerir os agents/skills apropriados.
 
+---
+
+## Model & Swarm Strategy
+
+### Princípio: Eficiência Máxima
+- **Use o modelo mais leve possível** para tarefas operacionais
+- **Lance swarms paralelos** para acelerar trabalho independente
+- **Reserve modelos pesados** apenas para decisões complexas
+
+### Seleção de Modelo por Tarefa
+
+| Tipo de Tarefa | Modelo | Exemplos de Agents |
+|----------------|--------|-------------------|
+| Busca de arquivos, lookups simples | `haiku` | `explore`, `architect-low`, `security-reviewer-low`, `researcher-low` |
+| Execução de código, dev padrão | `sonnet` | `executor`, `frontend-agent`, `backend-developer`, `code-reviewer` |
+| Arquitetura complexa, planejamento | `opus` | `architect`, `planner`, `analyst`, `critic` |
+
+### Padrões de Swarm
+
+```
+# Múltiplos arquivos para revisar → spawn revisores paralelos
+Task(explore, "find auth files") + Task(explore, "find api routes") + Task(explore, "find tests")
+
+# Validação completa → rodar tudo em paralelo
+Task(build-fixer) + Task(security-reviewer-low) + Task(tdd-guide-low)
+
+# Exploração de codebase → múltiplos explores com patterns diferentes
+Task(explore, "*.ts in src/") + Task(explore, "*.test.ts") + Task(explore, "*.config.*")
+```
+
+### Regras de Ouro
+1. **Haiku primeiro** - só escale se a tarefa exigir
+2. **Paralelize sempre que possível** - tarefas independentes = swarm
+3. **Evite opus para operacional** - reserve para decisões de arquitetura
+
+---
+
 ## Como Funciona
 
 ### Skills (Automáticas)
